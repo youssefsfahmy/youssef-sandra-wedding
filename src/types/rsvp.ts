@@ -11,15 +11,12 @@ export type Party = {
   id: string;
   label?: string;
   members: Guest[];
-  // RSVP submission data (optional - only present after submission)
-  partyId?: string; // Duplicate of id for consistency
-  partyLabel?: string; // Duplicate of label for consistency
-  invitedToPrayer: boolean;
-  invitedToParty: boolean;
+  partyId?: string;
+  partyLabel?: string;
   confirmationCode?: string;
   createdAt?: number;
-  guests?: GuestRSVP[]; // RSVP responses for each guest
-  message?: string; // Optional message from the party
+  guests?: GuestRSVP[];
+  message?: string;
 };
 
 export type GuestRSVP = {
@@ -27,12 +24,7 @@ export type GuestRSVP = {
   firstName: string;
   lastName: string;
   email?: string;
-  rsvpPrayer?: YesNo;
-  rsvpParty?: YesNo;
-  meal?: "chicken" | "veal";
-  dietaryNotes?: string;
-  notePrayer?: string;
-  noteParty?: string;
+  rsvp?: YesNo;
 };
 
 export type FormState = {

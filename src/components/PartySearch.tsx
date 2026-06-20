@@ -6,9 +6,6 @@ interface Step1PartySearchProps {
   onPartySelect: (party: Party) => void;
   selectedParty?: Party;
 }
-const isPartyOnlyEventWebsite =
-  process.env.NEXT_PUBLIC_IS_PARTY_EVENT === "true";
-
 const Step1PartySearch: React.FC<Step1PartySearchProps> = ({
   onPartySelect,
   selectedParty,
@@ -29,7 +26,7 @@ const Step1PartySearch: React.FC<Step1PartySearchProps> = ({
 
     setIsLoading(true);
     try {
-      const results = await searchParties(searchTerm, isPartyOnlyEventWebsite);
+      const results = await searchParties(searchTerm);
       console.log("Search results:", results);
 
       setSearchResults(results);
