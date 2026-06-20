@@ -49,7 +49,7 @@ const SubmissionViewPage: React.FC = () => {
   };
 
   const logo = (
-    <a href="/" style={{ fontFamily: "'Great Vibes', cursive", fontSize: "1.7rem", color: G, textDecoration: "none", display: "block", textAlign: "center", marginBottom: 28 }}>
+    <a href="/" style={{ fontFamily: "'Tangerine', cursive", fontSize: "1.7rem", color: G, textDecoration: "none", display: "block", textAlign: "center", marginBottom: 28 }}>
       Y &amp; S
     </a>
   );
@@ -104,7 +104,7 @@ const SubmissionViewPage: React.FC = () => {
 
           {/* Heading */}
           <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: "clamp(2rem, 6vw, 2.8rem)", color: G, margin: "0 0 10px", lineHeight: 1.2 }}>
+            <p style={{ fontFamily: "'Tangerine', cursive", fontSize: "clamp(2rem, 6vw, 2.8rem)", color: G, margin: "0 0 10px", lineHeight: 1.2 }}>
               {allDeclined ? "We'll miss you." : "See you on the sand."}
             </p>
             <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.15rem", color: "#7d8270", margin: 0, lineHeight: 1.6 }}>

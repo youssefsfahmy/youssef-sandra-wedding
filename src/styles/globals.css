@@ -95,6 +95,8 @@ input, select, textarea, button {
   --font-viaoda: "Viaoda Libre", serif;
 }
 
+[style*="Tangerine"] { font-weight: 700; }
+
 /* Mobile: stack header into logo row + nav row, both centered */
 @media (max-width: 600px) {
   .site-header-inner {

@@ -35,7 +35,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
           <circle cx="40" cy="40" r="34" />
           <path d="M24,40 L34,50 L56,30" />
         </svg>
-        <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: "2.2rem", color: G, margin: "0 0 10px" }}>
+        <p style={{ fontFamily: "'Tangerine', cursive", fontSize: "2.2rem", color: G, margin: "0 0 10px" }}>
           We&apos;re thrilled!
         </p>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.2rem", color: "#7d8270", margin: "0 0 28px", lineHeight: 1.6 }}>
