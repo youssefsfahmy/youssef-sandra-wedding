@@ -737,33 +737,6 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div
-                style={{
-                  background: "#eef0e6",
-                  border: "1px solid rgba(88,103,74,0.16)",
-                  borderRadius: 14,
-                  padding: "18px 22px",
-                  maxWidth: "42ch",
-                }}
-              >
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: "0.95rem",
-                    lineHeight: 1.6,
-                    color: "#5b6051",
-                  }}
-                >
-                  <strong style={{ color: "#58674a" }}>Gentlemen —</strong> Suits
-                  and linen suits warmly welcomed for the sea and sun. No smart
-                  casual, please.
-                  <br />
-                  <br />
-                  <strong style={{ color: "#58674a" }}>Ladies —</strong> Elegant
-                  dresses or formal separates. Think florals, flowing silhouettes,
-                  and soft colours that belong by the sea.
-                </p>
-              </div>
             </div>
 
             <div
@@ -822,6 +795,133 @@ export default function Home() {
               >
                 View ceremony map
               </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ==================== DRESS CODE ==================== */}
+        <section
+          id="dress-code"
+          style={{ background: "#e6eef0", scrollMarginTop: "var(--scroll-offset)" }}
+        >
+          <div
+            style={{
+              maxWidth: 1000,
+              margin: "0 auto",
+              padding: "clamp(72px, 11vw, 128px) 24px",
+              textAlign: "center",
+            }}
+            className="js-reveal"
+          >
+            <p
+              style={{
+                fontSize: "0.76rem",
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: "#7c9097",
+                margin: "0 0 10px",
+              }}
+            >
+              The Dress Code
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Tangerine', cursive",
+                fontWeight: 400,
+                color: TEAL,
+                fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
+                lineHeight: 1.32,
+                paddingBottom: "0.66em",
+                margin: "0 0 16px",
+              }}
+            >
+              What to wear
+            </h2>
+            <p
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontStyle: "italic",
+                fontSize: "clamp(1.25rem, 3vw, 1.6rem)",
+                color: "#5f7177",
+                maxWidth: "44ch",
+                margin: "0 auto",
+              }}
+            >
+              Formal — dressed for an evening by the sea and sun.
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 24,
+                maxWidth: 760,
+                margin: "44px auto 0",
+                textAlign: "left",
+              }}
+            >
+              <div
+                style={{
+                  background: "#f3f7f8",
+                  border: "1px solid rgba(70,96,106,0.16)",
+                  borderRadius: 14,
+                  padding: "24px 26px",
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 8px",
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: TEAL,
+                  }}
+                >
+                  Gentlemen
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "1rem",
+                    lineHeight: 1.65,
+                    color: "#52636a",
+                  }}
+                >
+                  Suits and linen suits warmly welcomed for the sea and sun. No
+                  smart casual, please.
+                </p>
+              </div>
+              <div
+                style={{
+                  background: "#f3f7f8",
+                  border: "1px solid rgba(70,96,106,0.16)",
+                  borderRadius: 14,
+                  padding: "24px 26px",
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 8px",
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: TEAL,
+                  }}
+                >
+                  Ladies
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "1rem",
+                    lineHeight: 1.65,
+                    color: "#52636a",
+                  }}
+                >
+                  Elegant dresses or formal separates. Think florals, flowing
+                  silhouettes, and soft colours that belong by the sea.
+                </p>
+              </div>
             </div>
           </div>
         </section>
