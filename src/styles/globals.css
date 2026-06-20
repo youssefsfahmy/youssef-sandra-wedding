@@ -92,7 +92,17 @@ input, select, textarea, button {
 
 :root {
   --font-montserrat: "Montserrat", sans-serif;
-  --font-viaoda: "Viaoda Libre", serif;
+}
+
+/* Visible keyboard focus indicator. !important overrides inline `outline: none`
+   set on inputs/buttons throughout the app. Only shows for keyboard users. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #58674a !important;
+  outline-offset: 3px;
 }
 
 [style*="Tangerine"] { font-weight: 700; }

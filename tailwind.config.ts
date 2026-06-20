@@ -63,9 +63,7 @@ const config: Config = {
       },
 
       fontFamily: {
-        "gotham-light": ["Gotham-Light", "sans-serif"],
         montserrat: ["var(--font-montserrat)"],
-        viaoda: ["var(--font-viaoda)"],
       },
     },
   },

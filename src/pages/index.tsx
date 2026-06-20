@@ -1393,15 +1393,20 @@ export default function Home() {
                     style={{
                       width: "100%",
                       background:
-                        isSearching || !searchTerm.trim() ? "#b9bea8" : G,
-                      color: "#f5f1e6",
-                      border: "none",
+                        isSearching || !searchTerm.trim() ? "transparent" : G,
+                      color:
+                        isSearching || !searchTerm.trim() ? "#9a9a8a" : "#f5f1e6",
+                      border:
+                        isSearching || !searchTerm.trim()
+                          ? "1px solid #cdd1c1"
+                          : `1px solid ${G}`,
                       padding: 18,
                       borderRadius: 999,
                       fontSize: "0.8rem",
                       letterSpacing: "0.18em",
                       textTransform: "uppercase",
                       fontWeight: 600,
+                      transition: "all 0.2s ease",
                       cursor:
                         isSearching || !searchTerm.trim()
                           ? "not-allowed"
