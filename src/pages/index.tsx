@@ -627,7 +627,10 @@ export default function Home() {
         {/* ==================== CEREMONY ==================== */}
         <section
           id="ceremony"
-          style={{ background: "#faf8f1", scrollMarginTop: "var(--scroll-offset)" }}
+          style={{
+            background: "#faf8f1",
+            scrollMarginTop: "var(--scroll-offset)",
+          }}
         >
           <div
             style={{
@@ -802,24 +805,27 @@ export default function Home() {
         {/* ==================== DRESS CODE ==================== */}
         <section
           id="dress-code"
-          style={{ background: "#e6eef0", scrollMarginTop: "var(--scroll-offset)" }}
+          style={{
+            background: "#eef0e6",
+            scrollMarginTop: "var(--scroll-offset)",
+          }}
         >
           <div
             style={{
               maxWidth: 1000,
               margin: "0 auto",
-              padding: "clamp(72px, 11vw, 128px) 24px",
+              padding: "clamp(44px, 7vw, 72px) 24px",
               textAlign: "center",
             }}
             className="js-reveal"
           >
             <p
               style={{
-                fontSize: "0.76rem",
+                fontSize: "0.74rem",
                 letterSpacing: "0.3em",
                 textTransform: "uppercase",
-                color: "#7c9097",
-                margin: "0 0 10px",
+                color: "#8a9079",
+                margin: "0 0 6px",
               }}
             >
               The Dress Code
@@ -828,11 +834,11 @@ export default function Home() {
               style={{
                 fontFamily: "'Tangerine', cursive",
                 fontWeight: 400,
-                color: TEAL,
-                fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
-                lineHeight: 1.32,
-                paddingBottom: "0.66em",
-                margin: "0 0 16px",
+                color: G,
+                fontSize: "clamp(2.4rem, 6vw, 3.6rem)",
+                lineHeight: 1.2,
+                paddingBottom: "0.4em",
+                margin: "0 0 8px",
               }}
             >
               What to wear
@@ -841,9 +847,9 @@ export default function Home() {
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontStyle: "italic",
-                fontSize: "clamp(1.25rem, 3vw, 1.6rem)",
-                color: "#5f7177",
-                maxWidth: "44ch",
+                fontSize: "clamp(1.1rem, 2.6vw, 1.35rem)",
+                color: "#6c7261",
+                maxWidth: "42ch",
                 margin: "0 auto",
               }}
             >
@@ -853,28 +859,28 @@ export default function Home() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                gap: 24,
-                maxWidth: 760,
-                margin: "44px auto 0",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: 14,
+                maxWidth: 720,
+                margin: "26px auto 0",
                 textAlign: "left",
               }}
             >
               <div
                 style={{
-                  background: "#f3f7f8",
-                  border: "1px solid rgba(70,96,106,0.16)",
-                  borderRadius: 14,
-                  padding: "24px 26px",
+                  background: "#f6f7ef",
+                  border: "1px solid rgba(88,103,74,0.16)",
+                  borderRadius: 12,
+                  padding: "16px 20px",
                 }}
               >
                 <p
                   style={{
-                    margin: "0 0 8px",
-                    fontSize: "0.72rem",
+                    margin: "0 0 6px",
+                    fontSize: "0.7rem",
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
-                    color: TEAL,
+                    color: G,
                   }}
                 >
                   Gentlemen
@@ -882,9 +888,9 @@ export default function Home() {
                 <p
                   style={{
                     margin: 0,
-                    fontSize: "1rem",
-                    lineHeight: 1.65,
-                    color: "#52636a",
+                    fontSize: "0.95rem",
+                    lineHeight: 1.55,
+                    color: "#5b6051",
                   }}
                 >
                   Suits and linen suits warmly welcomed for the sea and sun. No
@@ -893,19 +899,19 @@ export default function Home() {
               </div>
               <div
                 style={{
-                  background: "#f3f7f8",
-                  border: "1px solid rgba(70,96,106,0.16)",
-                  borderRadius: 14,
-                  padding: "24px 26px",
+                  background: "#f6f7ef",
+                  border: "1px solid rgba(88,103,74,0.16)",
+                  borderRadius: 12,
+                  padding: "16px 20px",
                 }}
               >
                 <p
                   style={{
-                    margin: "0 0 8px",
-                    fontSize: "0.72rem",
+                    margin: "0 0 6px",
+                    fontSize: "0.7rem",
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
-                    color: TEAL,
+                    color: G,
                   }}
                 >
                   Ladies
@@ -913,9 +919,9 @@ export default function Home() {
                 <p
                   style={{
                     margin: 0,
-                    fontSize: "1rem",
-                    lineHeight: 1.65,
-                    color: "#52636a",
+                    fontSize: "0.95rem",
+                    lineHeight: 1.55,
+                    color: "#5b6051",
                   }}
                 >
                   Elegant dresses or formal separates. Think florals, flowing
@@ -929,7 +935,10 @@ export default function Home() {
         {/* ==================== RECEPTION + VENUE ==================== */}
         <section
           id="reception"
-          style={{ background: "#ece5d4", scrollMarginTop: "var(--scroll-offset)" }}
+          style={{
+            background: "#ece5d4",
+            scrollMarginTop: "var(--scroll-offset)",
+          }}
         >
           {/* Reception */}
           <div
@@ -1024,10 +1033,10 @@ export default function Home() {
               }}
             >
               {[
-                { time: "2:30", label: "Welcome drinks" },
-                { time: "3:30", label: "Lunch by the sea" },
-                { time: "5:30", label: "Toasts & first dance" },
-                { time: "7:00", label: "Dancing till sunset" },
+                { time: "3:30", label: "Welcome drinks & appetizers" },
+                { time: "5:00", label: "First dance" },
+                { time: "6:00", label: "Dancing into the night" },
+                { time: "11:00", label: "Say goodnight" },
               ].map(({ time, label }) => (
                 <div
                   key={time}
@@ -1087,23 +1096,19 @@ export default function Home() {
                   width: "100%",
                   height: "clamp(220px, 30vw, 320px)",
                   borderRadius: 20,
-                  background: "#c8dade",
-                  boxShadow: "0 22px 50px -26px rgba(60,90,95,0.5)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: TEAL,
+                  overflow: "hidden",
                 }}
               >
-                <span
+                <img
+                  src="/dayra-1.png"
+                  alt="Dayra Camp"
                   style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontStyle: "italic",
-                    fontSize: "1.2rem",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
                   }}
-                >
-                  A photo of Dayra Camp
-                </span>
+                />
               </div>
             </div>
             <div style={{ order: 1 }}>
@@ -1173,7 +1178,10 @@ export default function Home() {
         {/* ==================== RSVP ==================== */}
         <section
           id="rsvp"
-          style={{ background: "#f5f1e6", scrollMarginTop: "var(--scroll-offset)" }}
+          style={{
+            background: "#f5f1e6",
+            scrollMarginTop: "var(--scroll-offset)",
+          }}
         >
           <div
             style={{
@@ -1500,7 +1508,10 @@ export default function Home() {
         {/* ==================== GIFTS ==================== */}
         <section
           id="gifts"
-          style={{ background: "#faf8f1", scrollMarginTop: "var(--scroll-offset)" }}
+          style={{
+            background: "#faf8f1",
+            scrollMarginTop: "var(--scroll-offset)",
+          }}
         >
           <div
             style={{
@@ -1601,7 +1612,11 @@ export default function Home() {
 
         {/* ==================== THANK YOU ==================== */}
         <section
-          style={{ background: G, color: "#eef0e6", scrollMarginTop: "var(--scroll-offset)" }}
+          style={{
+            background: G,
+            color: "#eef0e6",
+            scrollMarginTop: "var(--scroll-offset)",
+          }}
         >
           <div
             style={{
