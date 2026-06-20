@@ -39,7 +39,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
           We&apos;re thrilled!
         </p>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.2rem", color: "#7d8270", margin: "0 0 28px", lineHeight: 1.6 }}>
-          Your reply has been received. We can&apos;t wait to see you on the sand.
+          Your reply has been received. We can&apos;t wait to see you by the sea.
         </p>
         <p style={{ fontSize: "0.78rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "#9a9a8a", margin: "0 0 28px" }}>
           If anything changes, just reach out to us directly.

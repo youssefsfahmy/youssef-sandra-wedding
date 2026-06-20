@@ -755,7 +755,7 @@ export default function Home() {
                   }}
                 >
                   <strong style={{ color: "#58674a" }}>Gentlemen —</strong> Suits
-                  and linen suits warmly welcomed for the sand and sun. No smart
+                  and linen suits warmly welcomed for the sea and sun. No smart
                   casual, please.
                   <br />
                   <br />
@@ -1474,9 +1474,8 @@ export default function Home() {
                 margin: "0 auto 30px",
               }}
             >
-              Your presence on the sand is the truest gift. If you&apos;d like
-              to give something more, we&apos;ve gathered a few ideas in one
-              place.
+              Your presence by the sea is the truest gift. If you&apos;d like to
+              give something more, we&apos;ve gathered a few ideas in one place.
             </p>
             <a
               href="https://www.zola.com/registry/youssefandsandra"
@@ -1568,8 +1567,7 @@ export default function Home() {
               }}
             >
               Thank you for being part of our story. We can&apos;t wait to feel
-              the sand beneath our feet and celebrate this new beginning with
-              you.
+              the sea breeze and celebrate this new beginning with you.
             </p>
             <p
               style={{
