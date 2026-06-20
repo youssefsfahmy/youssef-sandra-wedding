@@ -197,7 +197,7 @@ export default function Home() {
             <a
               href="#top"
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontSize: "1.9rem",
                 color: G,
                 textDecoration: "none",
@@ -375,7 +375,7 @@ export default function Home() {
 
             <h1
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontWeight: 400,
                 color: G,
                 fontSize: "clamp(4.2rem, 15vw, 9rem)",
@@ -551,7 +551,7 @@ export default function Home() {
               </p>
               <h2
                 style={{
-                  fontFamily: "'Parisienne', cursive",
+                  fontFamily: "'Great Vibes', cursive",
                   fontWeight: 400,
                   color: G,
                   fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
@@ -749,7 +749,7 @@ export default function Home() {
             </p>
             <h2
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontWeight: 400,
                 color: G,
                 fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
@@ -944,7 +944,7 @@ export default function Home() {
               </svg>
               <h2
                 style={{
-                  fontFamily: "'Parisienne', cursive",
+                  fontFamily: "'Great Vibes', cursive",
                   fontWeight: 400,
                   color: TEAL,
                   fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
@@ -1057,7 +1057,7 @@ export default function Home() {
             </p>
             <h2
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontWeight: 400,
                 color: G,
                 fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
@@ -1105,7 +1105,7 @@ export default function Home() {
                   <p
                     style={{
                       margin: "0 0 4px",
-                      fontFamily: "'Parisienne', cursive",
+                      fontFamily: "'Great Vibes', cursive",
                       fontSize: "clamp(1.8rem, 5vw, 2.6rem)",
                       color: G,
                       lineHeight: 1.2,
@@ -1390,7 +1390,7 @@ export default function Home() {
             </p>
             <h2
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontWeight: 400,
                 color: G,
                 fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
@@ -1482,7 +1482,7 @@ export default function Home() {
             </svg>
             <h2
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontWeight: 400,
                 fontSize: "clamp(3rem, 8vw, 5rem)",
                 lineHeight: 1.32,
@@ -1510,7 +1510,7 @@ export default function Home() {
             </p>
             <p
               style={{
-                fontFamily: "'Parisienne', cursive",
+                fontFamily: "'Great Vibes', cursive",
                 fontSize: "2.4rem",
                 margin: "34px 0 0",
                 color: "#fbfaf3",

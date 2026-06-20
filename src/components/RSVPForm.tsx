@@ -171,7 +171,7 @@ const RSVPForm: React.FC = () => {
     <div style={pageStyle}>
       <div style={cardStyle}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <a href="/" style={{ fontFamily: "'Parisienne', cursive", fontSize: "1.7rem", color: "#58674a", textDecoration: "none", display: "block", marginBottom: 20 }}>Y &amp; S</a>
+          <a href="/" style={{ fontFamily: "'Great Vibes', cursive", fontSize: "1.7rem", color: "#58674a", textDecoration: "none", display: "block", marginBottom: 20 }}>Y &amp; S</a>
         </div>
 
         <ProgressBar steps={getCurrentSteps()} />
