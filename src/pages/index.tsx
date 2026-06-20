@@ -172,9 +172,6 @@ export default function Home() {
         return;
       }
       setPreloadedParty(party);
-      setTimeout(() => {
-        document.getElementById("rsvp")?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
     });
   }, [router.isReady, router.query]);
 
