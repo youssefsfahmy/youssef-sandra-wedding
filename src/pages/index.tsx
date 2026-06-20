@@ -233,12 +233,6 @@ export default function Home() {
                   Reception
                 </a>
                 <a
-                  href="#venue"
-                  style={{ color: "#6c7261", textDecoration: "none" }}
-                >
-                  Venue
-                </a>
-                <a
                   href="#gifts"
                   style={{ color: "#6c7261", textDecoration: "none" }}
                 >
@@ -722,16 +716,17 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ==================== RECEPTION ==================== */}
+        {/* ==================== RECEPTION + VENUE ==================== */}
         <section
           id="reception"
           style={{ background: "#ece5d4", scrollMarginTop: 72 }}
         >
+          {/* Reception */}
           <div
             style={{
               maxWidth: 1000,
               margin: "0 auto",
-              padding: "clamp(72px, 11vw, 128px) 24px",
+              padding: "clamp(72px, 11vw, 128px) 24px clamp(48px, 8vw, 80px)",
               textAlign: "center",
             }}
             className="js-reveal"
@@ -856,18 +851,19 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
 
-        {/* ==================== VENUE ==================== */}
-        <section
-          id="venue"
-          style={{ background: "#e6eef0", scrollMarginTop: 72 }}
-        >
+          {/* Divider */}
+          <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px" }}>
+            <div style={{ height: 1, background: "rgba(88,103,74,0.18)" }} />
+          </div>
+
+          {/* Venue */}
           <div
+            id="venue"
             style={{
               maxWidth: 1000,
               margin: "0 auto",
-              padding: "clamp(72px, 11vw, 128px) 24px",
+              padding: "clamp(48px, 8vw, 80px) 24px clamp(72px, 11vw, 128px)",
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
               gap: 56,
@@ -912,36 +908,6 @@ export default function Home() {
               >
                 The Venue
               </p>
-              <svg
-                viewBox="0 0 240 170"
-                style={{
-                  width: 96,
-                  height: "auto",
-                  margin: "0 0 6px",
-                  display: "block",
-                }}
-                fill="none"
-                stroke="#6f9aa4"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path
-                  data-draw=""
-                  d="M40,40 q14,-12 28,0 M168,30 q14,-12 28,0"
-                />
-                <path
-                  data-draw=""
-                  data-delay="0.25"
-                  d="M30,150 L120,40 L210,150 Z"
-                />
-                <path
-                  data-draw=""
-                  data-delay="0.5"
-                  d="M120,150 L100,92 M120,150 L140,92"
-                />
-                <path data-draw="" data-delay="0.65" d="M10,150 L230,150" />
-              </svg>
               <h2
                 style={{
                   fontFamily: "'Tangerine', cursive",
