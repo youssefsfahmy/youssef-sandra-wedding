@@ -726,7 +726,7 @@ export default function Home() {
             style={{
               maxWidth: 1000,
               margin: "0 auto",
-              padding: "clamp(72px, 11vw, 128px) 24px clamp(48px, 8vw, 80px)",
+              padding: "clamp(56px, 9vw, 96px) 24px clamp(36px, 6vw, 56px)",
               textAlign: "center",
             }}
             className="js-reveal"
@@ -863,10 +863,10 @@ export default function Home() {
             style={{
               maxWidth: 1000,
               margin: "0 auto",
-              padding: "clamp(48px, 8vw, 80px) 24px clamp(72px, 11vw, 128px)",
+              padding: "clamp(36px, 6vw, 56px) 24px clamp(56px, 9vw, 96px)",
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: 56,
+              gap: 36,
               alignItems: "center",
             }}
             className="js-reveal"
@@ -875,7 +875,7 @@ export default function Home() {
               <div
                 style={{
                   width: "100%",
-                  height: "clamp(280px, 40vw, 420px)",
+                  height: "clamp(220px, 30vw, 320px)",
                   borderRadius: 20,
                   background: "#c8dade",
                   boxShadow: "0 22px 50px -26px rgba(60,90,95,0.5)",
@@ -921,19 +921,6 @@ export default function Home() {
               >
                 Dayra Camp
               </h2>
-              <p
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "1.35rem",
-                  color: "#52636a",
-                  lineHeight: 1.5,
-                  margin: "0 0 18px",
-                  maxWidth: "40ch",
-                }}
-              >
-                A quiet stretch of coast where the desert meets the water — open
-                tents, warm light, and nothing between us and the horizon.
-              </p>
               <p
                 style={{
                   fontSize: "1rem",
