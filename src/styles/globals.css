@@ -94,3 +94,24 @@ input, select, textarea, button {
   --font-montserrat: "Montserrat", sans-serif;
   --font-viaoda: "Viaoda Libre", serif;
 }
+
+/* Mobile: compact header so nav doesn't stack into many rows */
+@media (max-width: 600px) {
+  .site-header-inner {
+    gap: 8px 16px !important;
+  }
+  .site-nav {
+    gap: 4px 14px !important;
+    font-size: 0.68rem !important;
+  }
+}
+
+/* Mobile: hero section — avoid large centering gap */
+@media (max-width: 600px) {
+  .hero-section {
+    min-height: auto !important;
+    justify-content: flex-start !important;
+    padding-top: 52px !important;
+    padding-bottom: 52px !important;
+  }
+}

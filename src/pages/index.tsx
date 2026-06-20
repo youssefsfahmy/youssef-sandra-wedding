@@ -182,6 +182,7 @@ export default function Home() {
           }}
         >
           <div
+            className="site-header-inner"
             style={{
               maxWidth: 1100,
               margin: "0 auto",
@@ -206,6 +207,7 @@ export default function Home() {
               Y &amp; S
             </a>
             <nav
+              className="site-nav"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -259,6 +261,7 @@ export default function Home() {
 
         {/* ==================== HERO ==================== */}
         <section
+          className="hero-section"
           style={{
             position: "relative",
             minHeight: "92vh",
