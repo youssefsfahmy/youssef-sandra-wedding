@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import NextHead from "next/head";
 import { useRouter } from "next/router";
 import { searchParties, getParty } from "@/utils/firebase";
@@ -15,6 +15,76 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [preloadedParty, setPreloadedParty] = useState<Party | null>(null);
+
+  // ---- Intro animation (couple illustration) ----
+  const illoRef = useRef<HTMLImageElement>(null);
+  const [introStage, setIntroStage] = useState<"paused" | "playing" | "done">(
+    "paused",
+  );
+  const [pausedTf, setPausedTf] = useState("");
+  const [splashTextTop, setSplashTextTop] = useState<number | null>(null);
+  const [illoReady, setIlloReady] = useState(false);
+
+  // Place a small, centred splash version of the illustration that will
+  // GROW into its (larger) resting slot above the names when clicked.
+  const recalcIntro = useCallback(() => {
+    const el = illoRef.current;
+    if (!el) return;
+    // Measure the untransformed resting (home) box
+    el.style.transform = "none";
+    const r = el.getBoundingClientRect();
+    if (!r.height) {
+      requestAnimationFrame(recalcIntro);
+      return;
+    }
+    const targetH = Math.min(window.innerHeight * 0.32, 250); // small start
+    const s = targetH / r.height; // < 1 → starts smaller, grows to home
+    const homeCX = r.left + r.width / 2;
+    const homeCY = r.top + r.height / 2;
+    const vpCX = window.innerWidth / 2;
+    const vpCY = window.innerHeight * 0.42;
+    const dx = vpCX - homeCX;
+    const dy = vpCY - homeCY;
+    const tf = `translate(${dx}px, ${dy}px) scale(${s})`;
+    el.style.transform = tf; // apply immediately to avoid a flash
+    setPausedTf(tf);
+    setSplashTextTop(vpCY + targetH / 2 + 26);
+    setIlloReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (introStage !== "paused") return;
+    requestAnimationFrame(recalcIntro);
+    const onResize = () => recalcIntro();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [introStage, recalcIntro]);
+
+  // Lock the page while the intro is on screen
+  useEffect(() => {
+    if (introStage !== "done") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      window.scrollTo(0, 0);
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [introStage]);
+
+  const handleViewInvite = useCallback(() => {
+    if (introStage !== "paused") return;
+    const el = illoRef.current;
+    if (el) el.src = "/couple-anim.gif";
+    setIntroStage("playing");
+    window.setTimeout(() => {
+      if (illoRef.current) illoRef.current.src = "/couple-last.png";
+      setIntroStage("done");
+    }, 2950);
+  }, [introStage]);
+
+  const introActive = introStage !== "done";
 
   // Animations
   useEffect(() => {
@@ -157,6 +227,8 @@ export default function Home() {
           content="Join us for a celebration by the sea at Dayra Camp."
         />
         <meta property="og:image" content="/open-graphs_optimized_300.png" />
+        <link rel="preload" as="image" href="/couple-first.png" />
+        <link rel="preload" as="image" href="/couple-anim.gif" />
         <link rel="icon" href="/favicon.ico" />
       </NextHead>
 
@@ -170,6 +242,93 @@ export default function Home() {
           fontFamily: "'Mulish', sans-serif",
         }}
       >
+        {/* ==================== INTRO SPLASH ==================== */}
+        {introActive && (
+          <>
+            {/* Cream backdrop that fades away as the couple flies in */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "#f5f1e6",
+                zIndex: 100,
+                opacity: introStage === "paused" ? 1 : 0,
+                transition: "opacity 1.3s ease 0.2s",
+                pointerEvents: introStage === "paused" ? "auto" : "none",
+              }}
+            />
+            {/* Splash text + button */}
+            <div
+              style={{
+                position: "fixed",
+                left: 0,
+                right: 0,
+                top: splashTextTop ?? undefined,
+                bottom: splashTextTop == null ? "12vh" : undefined,
+                zIndex: 120,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 18,
+                padding: "0 24px",
+                textAlign: "center",
+                opacity: introStage === "paused" && illoReady ? 1 : 0,
+                transition: "opacity 0.55s ease",
+                pointerEvents: introStage === "paused" ? "auto" : "none",
+              }}
+            >
+              <div>
+                <p
+                  style={{
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.34em",
+                    textTransform: "uppercase",
+                    color: "#8a9079",
+                    margin: "0 0 2px",
+                  }}
+                >
+                  The wedding of
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Tangerine', cursive",
+                    fontWeight: 400,
+                    color: G,
+                    fontSize: "clamp(2.6rem, 9vw, 3.8rem)",
+                    lineHeight: 1,
+                    margin: 0,
+                  }}
+                >
+                  Youssef &amp; Sandra
+                </p>
+              </div>
+              <button
+                onClick={handleViewInvite}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 12,
+                  background: G,
+                  color: "#f5f1e6",
+                  border: "none",
+                  padding: "16px 40px",
+                  borderRadius: 999,
+                  fontSize: "0.78rem",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: "0 16px 34px -18px rgba(88,103,74,0.8)",
+                }}
+              >
+                View invitation
+                <span style={{ fontSize: "1rem", lineHeight: 0 }}>→</span>
+              </button>
+            </div>
+          </>
+        )}
+
         {/* ==================== HEADER ==================== */}
         <header
           style={{
@@ -285,88 +444,42 @@ export default function Home() {
             >
               Together with their families
             </p>
+          </div>
 
-            <svg
-              viewBox="0 0 480 168"
-              data-float="sway"
-              style={{
-                width: "min(440px, 72vw)",
-                height: "auto",
-                display: "block",
-                margin: "14px auto -6px",
-              }}
-              fill="none"
-              stroke="#7e8c6a"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path
-                data-draw=""
-                d="M40,158 C40,72 196,26 240,26 C284,26 440,72 440,158"
-              />
-              <path
-                data-draw=""
-                data-delay="0.25"
-                transform="translate(74,120) rotate(-58)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.35"
-                transform="translate(102,92) rotate(-50)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.45"
-                transform="translate(136,64) rotate(-40)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.55"
-                transform="translate(176,44) rotate(-26)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.6"
-                transform="translate(216,32) rotate(-10)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.6"
-                transform="translate(262,32) rotate(14) scale(-1,1)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.55"
-                transform="translate(304,44) rotate(28) scale(-1,1)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.45"
-                transform="translate(344,64) rotate(42) scale(-1,1)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.35"
-                transform="translate(378,92) rotate(52) scale(-1,1)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-              <path
-                data-draw=""
-                data-delay="0.25"
-                transform="translate(406,120) rotate(60) scale(-1,1)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
-              />
-            </svg>
+          {/* Couple illustration — flies in from the intro splash */}
+          <img
+            ref={illoRef}
+            src="/couple-first.png"
+            alt="Youssef and Sandra"
+            draggable={false}
+            onLoad={() => {
+              if (introStage === "paused") recalcIntro();
+            }}
+            style={{
+              width: "min(340px, 74vw)",
+              height: "auto",
+              display: "block",
+              margin: "10px auto 0",
+              position: introActive ? "relative" : "static",
+              zIndex: introActive ? 110 : "auto",
+              transform: introStage === "paused" ? pausedTf : "none",
+              transformOrigin: "center center",
+              transition:
+                introStage === "playing"
+                  ? "transform 2.2s cubic-bezier(.62,.04,.2,1)"
+                  : "none",
+              opacity: introStage === "paused" && !illoReady ? 0 : 1,
+              willChange: "transform",
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          />
 
+          {/* Names + details */}
+          <div
+            style={{ position: "relative", zIndex: 2, maxWidth: 760 }}
+            className="js-reveal"
+          >
             <h1
               style={{
                 fontFamily: "'Tangerine', cursive",
