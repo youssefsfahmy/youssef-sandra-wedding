@@ -97,6 +97,11 @@ input, select, textarea, button {
 
 [style*="Tangerine"] { font-weight: 700; }
 
+/* Header scrolls away with the page, so sections land flush at the very top */
+:root {
+  --scroll-offset: 0px;
+}
+
 /* Mobile: stack header into logo row + nav row, both centered */
 @media (max-width: 600px) {
   .site-header-inner {

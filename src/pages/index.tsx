@@ -423,7 +423,7 @@ export default function Home() {
             justifyContent: "center",
             textAlign: "center",
             padding: "80px 24px 0",
-            scrollMarginTop: 88,
+            scrollMarginTop: "var(--scroll-offset)",
           }}
         >
           <div
@@ -627,7 +627,7 @@ export default function Home() {
         {/* ==================== CEREMONY ==================== */}
         <section
           id="ceremony"
-          style={{ background: "#faf8f1", scrollMarginTop: 72 }}
+          style={{ background: "#faf8f1", scrollMarginTop: "var(--scroll-offset)" }}
         >
           <div
             style={{
@@ -829,7 +829,7 @@ export default function Home() {
         {/* ==================== RECEPTION + VENUE ==================== */}
         <section
           id="reception"
-          style={{ background: "#ece5d4", scrollMarginTop: 72 }}
+          style={{ background: "#ece5d4", scrollMarginTop: "var(--scroll-offset)" }}
         >
           {/* Reception */}
           <div
@@ -875,8 +875,8 @@ export default function Home() {
                 margin: "0 auto 8px",
               }}
             >
-              Long tables on the sand, the sea in front of us, and the evening
-              unfolding slowly into the night.
+              Long tables overlooking the sea, with the water in front of us and
+              the evening unfolding slowly into the night.
             </p>
 
             <svg
@@ -1073,7 +1073,7 @@ export default function Home() {
         {/* ==================== RSVP ==================== */}
         <section
           id="rsvp"
-          style={{ background: "#f5f1e6", scrollMarginTop: 72 }}
+          style={{ background: "#f5f1e6", scrollMarginTop: "var(--scroll-offset)" }}
         >
           <div
             style={{
@@ -1400,7 +1400,7 @@ export default function Home() {
         {/* ==================== GIFTS ==================== */}
         <section
           id="gifts"
-          style={{ background: "#faf8f1", scrollMarginTop: 72 }}
+          style={{ background: "#faf8f1", scrollMarginTop: "var(--scroll-offset)" }}
         >
           <div
             style={{
@@ -1502,7 +1502,7 @@ export default function Home() {
 
         {/* ==================== THANK YOU ==================== */}
         <section
-          style={{ background: G, color: "#eef0e6", scrollMarginTop: 72 }}
+          style={{ background: G, color: "#eef0e6", scrollMarginTop: "var(--scroll-offset)" }}
         >
           <div
             style={{
