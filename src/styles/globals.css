@@ -95,13 +95,23 @@ input, select, textarea, button {
   --font-viaoda: "Viaoda Libre", serif;
 }
 
-/* Mobile: compact header — hide text nav links, keep logo + RSVP pill */
+/* Mobile: stack header into logo row + nav row, both centered */
 @media (max-width: 600px) {
   .site-header-inner {
-    gap: 0 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .site-nav {
+    justify-content: center !important;
+    gap: 4px 14px !important;
+    font-size: 0.62rem !important;
+    letter-spacing: 0.12em !important;
   }
   .site-nav-links {
-    display: none !important;
+    display: contents !important;
   }
 }
 
