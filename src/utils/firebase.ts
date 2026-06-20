@@ -78,6 +78,8 @@ export async function getPartyByConfirmationCode(
           confirmationCode: data.confirmationCode,
           createdAt: data.createdAt,
           guests: data.guests,
+          message: data.message,
+          transport: data.transport,
         };
       }
     }
@@ -97,7 +99,8 @@ export async function submitRSVP(
   partyId: string,
   partyLabel: string | undefined,
   rsvpsByGuest: Record<string, GuestRSVP>,
-  message: string = ""
+  message: string = "",
+  transport?: boolean
 ): Promise<string> {
   const confirmationCode = generateConfirmationCode();
   const createdAt = Date.now();
@@ -113,6 +116,7 @@ export async function submitRSVP(
       confirmationCode,
       createdAt,
       message,
+      ...(transport !== undefined && { transport }),
     },
     { merge: true }
   );

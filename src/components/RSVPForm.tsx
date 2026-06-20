@@ -92,6 +92,10 @@ const RSVPForm: React.FC = () => {
     }));
   };
 
+  const handleTransportChange = (value: boolean) => {
+    setFormState((prev) => ({ ...prev, transport: value }));
+  };
+
   const handleSubmit = async () => {
     if (!formState.party) return;
     setIsSubmitting(true);
@@ -101,7 +105,8 @@ const RSVPForm: React.FC = () => {
         formState.party.id,
         formState.party.label,
         formState.rsvpsByGuest,
-        formState.party.message || ""
+        formState.party.message || "",
+        formState.transport
       );
       sendWhatsappNotification(formState, confirmationCode);
       setFormState((prev) => ({ ...prev, confirmationCode }));
@@ -131,33 +136,51 @@ const RSVPForm: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentStep]);
 
+  const pageStyle: React.CSSProperties = {
+    minHeight: "100vh",
+    background: "#f5f1e6",
+    fontFamily: "'Mulish', sans-serif",
+    color: "#474b40",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "48px 24px",
+  };
+
+  const cardStyle: React.CSSProperties = {
+    width: "100%",
+    maxWidth: 540,
+    background: "#faf8f1",
+    border: "1px solid rgba(88,103,74,0.16)",
+    borderRadius: 20,
+    padding: "40px 36px",
+  };
+
   if (isLoadingParty) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-          <p className="text-neutral-600">Loading your invitation…</p>
-        </div>
+      <div style={pageStyle}>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.2rem", color: "#7d8270" }}>
+          Preparing your invitation…
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 py-8">
-      <div className="max-w-2xl mx-auto px-2">
-        <div className="bg-white rounded-lg shadow-lg p-6 border border-neutral-300">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-secondary-dark mb-2">Wedding RSVP</h1>
-            <p className="text-neutral-600">Please confirm your attendance below</p>
+    <div style={pageStyle}>
+      <div style={cardStyle}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <a href="/" style={{ fontFamily: "'Parisienne', cursive", fontSize: "1.7rem", color: "#58674a", textDecoration: "none", display: "block", marginBottom: 20 }}>Y &amp; S</a>
+        </div>
+
+        <ProgressBar steps={getCurrentSteps()} />
+
+        {error && (
+          <div style={{ marginBottom: 20, padding: "12px 16px", background: "rgba(88,103,74,0.08)", border: "1px solid rgba(88,103,74,0.2)", borderRadius: 10 }}>
+            <p style={{ margin: 0, fontSize: "0.9rem", color: "#58674a" }}>{error}</p>
           </div>
-
-          <ProgressBar steps={getCurrentSteps()} />
-
-          {error && (
-            <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg">
-              <p className="text-primary font-medium">{error}</p>
-            </div>
-          )}
+        )}
 
           <div className="mb-8">
             {currentStep === 1 && formState.party && (
@@ -165,6 +188,8 @@ const RSVPForm: React.FC = () => {
                 guests={formState.party.members}
                 rsvpsByGuest={formState.rsvpsByGuest}
                 onRSVPChange={handleRSVPChange}
+                transport={formState.transport}
+                onTransportChange={handleTransportChange}
               />
             )}
             {currentStep === 2 && formState.party && (
@@ -177,40 +202,36 @@ const RSVPForm: React.FC = () => {
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
                 handleMessageChange={handleMessageChange}
+                transport={formState.transport}
               />
             )}
-          </div>
-
-          {!formState.confirmationCode && (
-            <div className="flex justify-between pt-6 border-t border-neutral-300">
-              <button
-                onClick={() => {
-                  if (currentStep === 1) { window.location.href = "/"; return; }
-                  setCurrentStep(currentStep - 1);
-                }}
-                className="px-6 py-2 rounded-lg font-medium bg-primary-100 text-primary hover:bg-neutral-200 transition-all"
-              >
-                ← Back
-              </button>
-
-              {currentStep < STEPS.length ? (
-                <button
-                  onClick={() => { if (isStep1Valid) setCurrentStep(2); }}
-                  disabled={!isStep1Valid}
-                  className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                    isStep1Valid
-                      ? "bg-primary text-white hover:bg-accent-hover shadow-lg"
-                      : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-                  }`}
-                >
-                  Next →
-                </button>
-              ) : (
-                <div />
-              )}
-            </div>
-          )}
         </div>
+
+        {!formState.confirmationCode && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 24, borderTop: "1px solid rgba(88,103,74,0.14)", marginTop: 8 }}>
+            <button
+              onClick={() => {
+                if (currentStep === 1) { window.location.href = "/"; return; }
+                setCurrentStep(currentStep - 1);
+              }}
+              style={{ background: "transparent", border: "1px solid rgba(88,103,74,0.3)", color: "#6c7261", padding: "10px 22px", borderRadius: 999, fontSize: "0.76rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer" }}
+            >
+              ← Back
+            </button>
+
+            {currentStep < STEPS.length ? (
+              <button
+                onClick={() => { if (isStep1Valid) setCurrentStep(2); }}
+                disabled={!isStep1Valid}
+                style={{ background: isStep1Valid ? "#58674a" : "rgba(88,103,74,0.2)", color: isStep1Valid ? "#f5f1e6" : "#9a9a8a", border: "none", padding: "10px 28px", borderRadius: 999, fontSize: "0.76rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, cursor: isStep1Valid ? "pointer" : "not-allowed" }}
+              >
+                Continue →
+              </button>
+            ) : (
+              <div />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

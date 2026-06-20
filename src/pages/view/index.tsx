@@ -6,6 +6,7 @@ import type { Party } from "@/types/rsvp";
 interface PartyWithSubmission extends Party {
   hasSubmission: boolean;
   submissionDate?: string;
+  transport?: boolean;
 }
 
 const ViewPage: React.FC = () => {
@@ -51,6 +52,7 @@ const ViewPage: React.FC = () => {
           message: d.message || "",
           hasSubmission: !!d.confirmationCode,
           submissionDate: d.createdAt ? new Date(d.createdAt).toLocaleString() : undefined,
+          transport: d.transport,
         };
       });
       setParties(data);
@@ -75,6 +77,8 @@ const ViewPage: React.FC = () => {
     const attending = allGuests.filter((g) => g.rsvp === "yes").length;
     const notAttending = allGuests.filter((g) => g.rsvp === "no").length;
 
+    const needsCoach = submitted.filter((p) => p.transport === true).length;
+
     return {
       totalParties: parties.length,
       submittedParties: submitted.length,
@@ -82,6 +86,7 @@ const ViewPage: React.FC = () => {
       totalGuests: allGuests.length,
       attending,
       notAttending,
+      needsCoach,
       responseRate: parties.length > 0
         ? ((submitted.length / parties.length) * 100).toFixed(1)
         : "0",
@@ -328,6 +333,9 @@ const ViewPage: React.FC = () => {
                             <div className="font-medium">{(party.guests || []).length} guests</div>
                             <div className="text-green-600">{attending} attending</div>
                             <div className="text-gray-400">{notAttending} not attending</div>
+                            {party.transport === true && (
+                              <div className="text-blue-600">🚌 Bus requested</div>
+                            )}
                           </div>
                         </div>
 
@@ -410,6 +418,10 @@ const ViewPage: React.FC = () => {
                             {totals.totalMembers - totals.attending - totals.notAttending}
                           </div>
                           <div className="text-sm text-neutral-600">No Response</div>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-blue-600">{totals.needsCoach}</div>
+                          <div className="text-sm text-neutral-600">Bus seats requested</div>
                         </div>
                       </div>
                     </div>

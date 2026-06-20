@@ -11,7 +11,10 @@ interface ConfirmationProps {
   onSubmit: () => void;
   isSubmitting: boolean;
   handleMessageChange: (message: string) => void;
+  transport?: boolean;
 }
+
+const G = "#58674a";
 
 const Confirmation: React.FC<ConfirmationProps> = ({
   party,
@@ -21,43 +24,32 @@ const Confirmation: React.FC<ConfirmationProps> = ({
   onSubmit,
   isSubmitting,
   handleMessageChange,
+  transport,
 }) => {
   const router = useRouter();
 
   if (confirmationCode) {
     return (
-      <div className="text-center space-y-6">
-        <div className="text-primary mb-4">
-          <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-
-        <div>
-          <h3 className="text-2xl font-bold text-secondary-dark mb-2">
-            RSVP Submitted Successfully!
-          </h3>
-          <p className="text-neutral-600 mb-6">
-            Thank you for your response. We look forward to celebrating with you!
-          </p>
-        </div>
-
-        <div className="text-sm text-neutral-600">
-          <p>If you need to make changes to your RSVP, please contact us directly.</p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
-          <button
-            onClick={() => router.push("/")}
-            className="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors"
-          >
-            Back to Event Details
-          </button>
-        </div>
+      <div style={{ textAlign: "center", padding: "12px 0" }}>
+        <svg viewBox="0 0 80 80" style={{ width: 64, height: 64, margin: "0 auto 20px", display: "block" }} fill="none" stroke={G} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="40" cy="40" r="34" />
+          <path d="M24,40 L34,50 L56,30" />
+        </svg>
+        <p style={{ fontFamily: "'Parisienne', cursive", fontSize: "2.2rem", color: G, margin: "0 0 10px" }}>
+          We&apos;re thrilled!
+        </p>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.2rem", color: "#7d8270", margin: "0 0 28px", lineHeight: 1.6 }}>
+          Your reply has been received. We can&apos;t wait to see you on the sand.
+        </p>
+        <p style={{ fontSize: "0.78rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "#9a9a8a", margin: "0 0 28px" }}>
+          If anything changes, just reach out to us directly.
+        </p>
+        <button
+          onClick={() => router.push("/")}
+          style={{ background: G, color: "#f5f1e6", border: "none", padding: "14px 36px", borderRadius: 999, fontSize: "0.78rem", letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer" }}
+        >
+          Back to the invitation
+        </button>
       </div>
     );
   }
@@ -66,84 +58,72 @@ const Confirmation: React.FC<ConfirmationProps> = ({
   const notAttending = guests.filter((g) => rsvpsByGuest[g.id]?.rsvp === "no");
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-reseda-green mb-2">Confirm Your RSVP</h3>
-        <p className="text-ash-gray mb-4">Please review your responses before submitting.</p>
-      </div>
+    <div>
+      <p style={{ fontSize: "0.72rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#8a9079", margin: "0 0 8px" }}>
+        Almost done
+      </p>
+      <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.15rem", color: "#7d8270", margin: "0 0 28px" }}>
+        Review your reply before sending it our way.
+      </p>
 
-      <div className="bg-linen rounded-lg p-4 border border-timberwolf">
-        <h4 className="font-medium text-reseda-green mb-2">Party Details</h4>
+      {/* Summary */}
+      <div style={{ background: "#eef0e6", border: "1px solid rgba(88,103,74,0.16)", borderRadius: 14, padding: "20px 22px", marginBottom: 20 }}>
         {party.partyLabel && (
-          <p className="text-sm text-ash-gray mb-1">
-            <span className="font-medium">Party:</span> {party.partyLabel}
-          </p>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.1rem", color: G, margin: "0 0 10px", fontWeight: 500 }}>{party.partyLabel}</p>
         )}
-        <p className="text-sm text-ash-gray">
-          <span className="font-medium">Guests:</span>{" "}
-          {guests.map((g) => `${g.firstName} ${g.lastName}`).join(", ")}
-        </p>
-      </div>
-
-      {attending.length > 0 && (
-        <div className="border border-timberwolf rounded-lg p-4 bg-white">
-          <h4 className="font-medium text-reseda-green mb-3">Attending</h4>
-          <p className="text-reseda-green font-medium mb-2">
-            ✓ {attending.length} guest{attending.length > 1 ? "s" : ""} attending
-          </p>
-          <ul className="text-sm text-ash-gray space-y-1">
+        {attending.length > 0 && (
+          <div style={{ marginBottom: notAttending.length > 0 ? 10 : 0 }}>
+            <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: G, margin: "0 0 5px" }}>Attending</p>
             {attending.map((g) => (
-              <li key={g.id}>• {g.firstName} {g.lastName}</li>
+              <p key={g.id} style={{ margin: "2px 0", fontSize: "0.95rem", color: "#474b40" }}>{g.firstName} {g.lastName}</p>
             ))}
-          </ul>
-        </div>
-      )}
-
-      {notAttending.length > 0 && (
-        <div className="border border-timberwolf rounded-lg p-4 bg-white">
-          <h4 className="font-medium text-ash-gray mb-3">Not Attending</h4>
-          <ul className="text-sm text-ash-gray space-y-1">
+          </div>
+        )}
+        {notAttending.length > 0 && (
+          <div>
+            <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#9a9a8a", margin: "0 0 5px" }}>Not attending</p>
             {notAttending.map((g) => (
-              <li key={g.id}>• {g.firstName} {g.lastName}</li>
+              <p key={g.id} style={{ margin: "2px 0", fontSize: "0.95rem", color: "#9a9a8a" }}>{g.firstName} {g.lastName}</p>
             ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="border border-brown-sugar/30 rounded-lg p-4 bg-primary-50">
-        <h4 className="font-medium text-brown-sugar mb-3">
-          Leave a message for Youssef & Sandra
-        </h4>
-        <p className="text-sm text-reseda-green mb-4">
-          Share your congratulations, well wishes, or a favorite memory!
-        </p>
-        <textarea
-          placeholder="Write your message here... (Optional)"
-          rows={4}
-          className="w-full px-3 py-2 border border-timberwolf rounded-lg focus:ring-2 focus:ring-brown-sugar focus:border-transparent resize-none placeholder-ash-gray"
-          onChange={(e) => handleMessageChange(e.target.value)}
-        />
-        <p className="text-xs text-reseda-green mt-2">
-          ✨ Your message will be shared with Youssef and Sandra
-        </p>
+          </div>
+        )}
+        {transport === true && (
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(88,103,74,0.14)" }}>
+            <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#8a9079", margin: "0 0 3px" }}>Transportation</p>
+            <p style={{ margin: 0, fontSize: "0.95rem", color: "#474b40" }}>Joining the bus</p>
+          </div>
+        )}
       </div>
 
-      <div className="pt-4">
-        <button
-          onClick={onSubmit}
-          disabled={isSubmitting}
-          className="w-full bg-primary-500 text-white py-3 px-6 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
-        >
-          {isSubmitting ? (
-            <span className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              Submitting RSVP...
-            </span>
-          ) : (
-            "Submit RSVP"
-          )}
-        </button>
+      {/* Message */}
+      <div style={{ marginBottom: 28 }}>
+        <label>
+          <span style={{ display: "block", fontSize: "0.72rem", letterSpacing: "0.16em", textTransform: "uppercase", color: "#9a9a8a", marginBottom: 10 }}>
+            A note for Youssef &amp; Sandra
+          </span>
+          <textarea
+            placeholder="Wishes, a memory, anything — entirely optional"
+            rows={3}
+            onChange={(e) => handleMessageChange(e.target.value)}
+            style={{ width: "100%", border: "1px solid rgba(88,103,74,0.22)", borderRadius: 12, background: "transparent", padding: "12px 14px", fontSize: "1rem", color: "#474b40", outline: "none", resize: "vertical", fontFamily: "'Mulish', sans-serif", boxSizing: "border-box" }}
+          />
+        </label>
       </div>
+
+      <button
+        onClick={onSubmit}
+        disabled={isSubmitting}
+        style={{ width: "100%", background: isSubmitting ? "#9a9a8a" : G, color: "#f5f1e6", border: "none", padding: 18, borderRadius: 999, fontSize: "0.8rem", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 600, cursor: isSubmitting ? "not-allowed" : "pointer" }}
+      >
+        {isSubmitting ? (
+          <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+            <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+            Sending…
+          </span>
+        ) : (
+          "Send our reply"
+        )}
+      </button>
     </div>
   );
 };

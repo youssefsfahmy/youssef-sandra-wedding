@@ -17,6 +17,7 @@ export type Party = {
   createdAt?: number;
   guests?: GuestRSVP[];
   message?: string;
+  transport?: boolean;
 };
 
 export type GuestRSVP = {
@@ -31,4 +32,5 @@ export type FormState = {
   party?: Party;
   rsvpsByGuest: Record<string, GuestRSVP>;
   confirmationCode?: string;
+  transport?: boolean;
 };

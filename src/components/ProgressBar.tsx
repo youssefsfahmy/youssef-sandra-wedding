@@ -11,71 +11,75 @@ interface ProgressBarProps {
   steps: Step[];
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ steps }) => {
-  const totalSteps = steps.length;
-  const completedSteps = steps.filter((step) => step.isCompleted).length;
-  const currentStep = steps.find((step) => step.isActive);
-  const currentStepIndex = currentStep ? currentStep.id - 1 : 0;
+const G = "#58674a";
 
-  const progressPercentage =
-    totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+const ProgressBar: React.FC<ProgressBarProps> = ({ steps }) => {
+  const currentIndex = (steps.find((s) => s.isActive)?.id ?? 1) - 1;
 
   return (
-    <div className="w-full mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-secondary-dark">
-          {currentStep?.label || "Complete"}
-        </h2>
-        <span className="text-sm text-neutral-500">
-          Step {currentStepIndex + 1} of {totalSteps}
-        </span>
+    <div style={{ marginBottom: 36 }}>
+      {/* Dots + connecting lines */}
+      <div style={{ display: "flex", alignItems: "center" }}>
+        {steps.map((step, i) => (
+          <React.Fragment key={step.id}>
+            <div
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: "50%",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: step.isCompleted || step.isActive ? G : "rgba(88,103,74,0.12)",
+                transition: "background 0.3s ease",
+              }}
+            >
+              {step.isCompleted ? (
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path d="M2.5 6.5L5.5 9.5L10.5 4" stroke="#f5f1e6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                <span style={{ fontSize: "0.7rem", color: step.isActive ? "#f5f1e6" : "#9a9a8a", fontWeight: 600 }}>
+                  {step.id}
+                </span>
+              )}
+            </div>
+            {i < steps.length - 1 && (
+              <div
+                style={{
+                  flex: 1,
+                  height: 1,
+                  background: currentIndex > i ? G : "rgba(88,103,74,0.18)",
+                  transition: "background 0.3s ease",
+                }}
+              />
+            )}
+          </React.Fragment>
+        ))}
       </div>
 
-      <div className="relative">
-        {/* Progress bar background */}
-        <div className="w-full bg-primary-100 rounded-full h-2">
-          {/* Progress bar fill */}
-          <div
-            className="bg-gradient-to-r from-primary-600 to-primary-300 h-2 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
-
-        {/* Step indicators */}
-        <div className="flex justify-between mt-4">
-          {steps.map((step) => (
-            <div key={step.id} className="flex flex-col items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-                  step.isCompleted
-                    ? "bg-primary text-white"
-                    : step.isActive
-                    ? "bg-primary text-white"
-                    : "bg-primary-100 text-neutral-500"
-                }`}
+      {/* Labels — separate row so they don't affect dot alignment */}
+      <div style={{ display: "flex", marginTop: 8 }}>
+        {steps.map((step, i) => (
+          <React.Fragment key={step.id}>
+            <div style={{ width: 28, flexShrink: 0, display: "flex", justifyContent: "center" }}>
+              <span
+                style={{
+                  fontSize: "0.62rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: step.isActive ? G : "#9a9a8a",
+                  fontWeight: step.isActive ? 600 : 400,
+                  whiteSpace: "nowrap",
+                }}
               >
-                {step.isCompleted ? (
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  step.id
-                )}
-              </div>
-              <span className="text-xs text-neutral-600 mt-2 text-center max-w-20">
                 {step.label}
               </span>
             </div>
-          ))}
-        </div>
+            {i < steps.length - 1 && <div style={{ flex: 1 }} />}
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );

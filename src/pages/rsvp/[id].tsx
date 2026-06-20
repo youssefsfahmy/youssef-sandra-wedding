@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import NextHead from "next/head";
 import { getPartyByConfirmationCode } from "@/utils/firebase";
 import type { Party } from "@/types/rsvp";
+
+const G = "#58674a";
 
 const SubmissionViewPage: React.FC = () => {
   const router = useRouter();
@@ -13,169 +16,160 @@ const SubmissionViewPage: React.FC = () => {
 
   useEffect(() => {
     if (!confirmationCode || typeof confirmationCode !== "string") return;
-
-    const fetchSubmission = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const partyData = await getPartyByConfirmationCode(confirmationCode);
-        if (!partyData?.confirmationCode) {
-          setError("RSVP submission not found. Please check your confirmation code.");
-          return;
-        }
-        setParty(partyData);
-      } catch (err) {
-        console.error("Error fetching submission:", err);
-        setError("Failed to load RSVP details. Please try again later.");
-      } finally {
-        setIsLoading(false);
+    getPartyByConfirmationCode(confirmationCode).then((data) => {
+      if (!data?.confirmationCode) {
+        setError("We couldn't find that RSVP. Please check your link and try again.");
+      } else {
+        setParty(data);
       }
-    };
-
-    fetchSubmission();
+    }).catch(() => {
+      setError("Something went wrong. Please try again later.");
+    }).finally(() => setIsLoading(false));
   }, [confirmationCode]);
 
-  const formatDate = (timestamp: number) =>
-    new Date(timestamp).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const pageStyle: React.CSSProperties = {
+    minHeight: "100vh",
+    background: "#f5f1e6",
+    fontFamily: "'Mulish', sans-serif",
+    color: "#474b40",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "48px 24px",
+  };
+
+  const cardStyle: React.CSSProperties = {
+    width: "100%",
+    maxWidth: 540,
+    background: "#faf8f1",
+    border: "1px solid rgba(88,103,74,0.16)",
+    borderRadius: 20,
+    padding: "40px 36px",
+  };
+
+  const logo = (
+    <a href="/" style={{ fontFamily: "'Parisienne', cursive", fontSize: "1.7rem", color: G, textDecoration: "none", display: "block", textAlign: "center", marginBottom: 28 }}>
+      Y &amp; S
+    </a>
+  );
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-neutral-50 py-8">
-        <div className="container mx-auto max-w-4xl px-4">
-          <div className="bg-white rounded-lg shadow-lg p-8 flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-3 text-neutral-600">Loading your RSVP details...</span>
-          </div>
-        </div>
-      </main>
+      <div style={pageStyle}>
+        {logo}
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.2rem", color: "#7d8270" }}>
+          Fetching your reply…
+        </p>
+      </div>
     );
   }
 
-  if (error) {
+  if (error || !party) {
     return (
-      <main className="min-h-screen bg-neutral-50 py-8">
-        <div className="container mx-auto max-w-4xl px-4">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center py-12">
-            <div className="text-6xl mb-4">😔</div>
-            <h1 className="text-2xl font-bold text-neutral-dark mb-4">RSVP Not Found</h1>
-            <p className="text-neutral-600 mb-6">{error}</p>
-            <button
-              onClick={() => router.push("/form")}
-              className="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors"
-            >
-              Submit New RSVP
-            </button>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  if (!party) return null;
-
-  const attending = (party.guests || []).filter((g) => g.rsvp === "yes");
-  const notAttending = (party.guests || []).filter((g) => g.rsvp === "no");
-
-  return (
-    <main className="min-h-screen bg-neutral-50 py-8">
-      <div className="container mx-auto max-w-4xl px-4">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="text-center mb-8">
-            <div className="text-6xl mb-4">🎉</div>
-            <h1 className="text-3xl font-bold text-primary-dark mb-2">
-              Thank You for Your RSVP!
-            </h1>
-            <p className="text-lg text-neutral-600 mb-4">
-              We&apos;re excited to celebrate with you on Youssef & Sandra&apos;s special day!
+      <div style={pageStyle}>
+        <div style={cardStyle}>
+          {logo}
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.5rem", color: "#9a9a8a", margin: "0 0 12px" }}>
+              We couldn&apos;t find that reply
             </p>
-            <div className="bg-primary-light border border-primary-200 rounded-lg p-4 inline-block">
-              <p className="text-sm text-primary-600 font-medium">
-                Confirmation Code:{" "}
-                <span className="font-bold text-primary-dark">{party.confirmationCode}</span>
-              </p>
-              <p className="text-xs text-primary-500 mt-1">
-                Submitted on {formatDate(party.createdAt || 0)}
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-secondary-light border border-secondary-200 rounded-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold text-secondary-dark mb-4">Your RSVP Summary</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-neutral-dark">{(party.guests || []).length}</div>
-                <div className="text-sm text-neutral-600">Total Guests</div>
-              </div>
-              <div className="bg-white rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-primary-600">{attending.length}</div>
-                <div className="text-sm text-neutral-600">Attending</div>
-              </div>
-              <div className="bg-white rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-neutral-400">{notAttending.length}</div>
-                <div className="text-sm text-neutral-600">Not Attending</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-neutral-dark mb-4">Guest Details</h2>
-            <div className="space-y-4">
-              {(party.guests || []).map((guest, index) => (
-                <div key={index} className="bg-neutral-50 border border-neutral-200 rounded-lg p-4 flex justify-between items-center">
-                  <div>
-                    <h3 className="font-semibold text-neutral-dark">
-                      {guest.firstName} {guest.lastName}
-                    </h3>
-                    {guest.email && <p className="text-sm text-neutral-500">{guest.email}</p>}
-                  </div>
-                  <span
-                    className={`text-sm font-medium px-3 py-1 rounded-full ${
-                      guest.rsvp === "yes"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-neutral-100 text-neutral-500"
-                    }`}
-                  >
-                    {guest.rsvp === "yes" ? "Attending" : "Not Attending"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {party.message && (
-            <div className="bg-primary-50 border border-primary-200 rounded-lg p-6 mb-8">
-              <h2 className="text-lg font-semibold text-primary-dark mb-2">Your Message</h2>
-              <p className="text-neutral-600 italic">&ldquo;{party.message}&rdquo;</p>
-            </div>
-          )}
-
-          <div className="bg-neutral-100 border border-neutral-200 rounded-lg p-6 text-center">
-            <h2 className="text-lg font-semibold text-neutral-dark mb-3">Need to Make Changes?</h2>
-            <p className="text-neutral-600 mb-4">
-              If you need to update your RSVP or have any questions, please contact us directly.
+            <p style={{ fontSize: "0.9rem", color: "#7d8270", margin: "0 0 28px", lineHeight: 1.6 }}>
+              {error}
             </p>
-            <p className="text-sm text-neutral-500">
-              <strong className="text-neutral-700">Youssef & Sandra</strong>
-            </p>
-          </div>
-
-          <div className="flex justify-center mt-8">
             <button
               onClick={() => router.push("/")}
-              className="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors"
+              style={{ background: G, color: "#f5f1e6", border: "none", padding: "13px 32px", borderRadius: 999, fontSize: "0.78rem", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer" }}
             >
-              Back to Event Details
+              Back to the invitation
             </button>
           </div>
         </div>
       </div>
-    </main>
+    );
+  }
+
+  const attending = (party.guests || []).filter((g) => g.rsvp === "yes");
+  const notAttending = (party.guests || []).filter((g) => g.rsvp === "no");
+  const allDeclined = attending.length === 0 && notAttending.length > 0;
+
+  return (
+    <>
+      <NextHead>
+        <title>Your RSVP — Youssef &amp; Sandra</title>
+      </NextHead>
+      <div style={pageStyle}>
+        <div style={cardStyle}>
+          {logo}
+
+          {/* Heading */}
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <p style={{ fontFamily: "'Parisienne', cursive", fontSize: "clamp(2rem, 6vw, 2.8rem)", color: G, margin: "0 0 10px", lineHeight: 1.2 }}>
+              {allDeclined ? "We'll miss you." : "See you on the sand."}
+            </p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.15rem", color: "#7d8270", margin: 0, lineHeight: 1.6 }}>
+              {allDeclined
+                ? "Your reply has been saved. We're sorry you can't make it — you'll be missed."
+                : "Your reply has been saved. We can't wait to celebrate with you."}
+            </p>
+          </div>
+
+          {/* Summary card */}
+          <div style={{ background: "#eef0e6", border: "1px solid rgba(88,103,74,0.16)", borderRadius: 14, padding: "20px 22px", marginBottom: 20 }}>
+            {party.partyLabel && (
+              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.1rem", color: G, margin: "0 0 12px", fontWeight: 500 }}>{party.partyLabel}</p>
+            )}
+
+            {attending.length > 0 && (
+              <div style={{ marginBottom: notAttending.length > 0 ? 10 : 0 }}>
+                <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: G, margin: "0 0 5px" }}>Attending</p>
+                {attending.map((g, i) => (
+                  <p key={i} style={{ margin: "2px 0", fontSize: "0.95rem", color: "#474b40" }}>{g.firstName} {g.lastName}</p>
+                ))}
+              </div>
+            )}
+
+            {notAttending.length > 0 && (
+              <div>
+                <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#9a9a8a", margin: "0 0 5px" }}>Not attending</p>
+                {notAttending.map((g, i) => (
+                  <p key={i} style={{ margin: "2px 0", fontSize: "0.95rem", color: "#9a9a8a" }}>{g.firstName} {g.lastName}</p>
+                ))}
+              </div>
+            )}
+
+            {party.transport === true && (
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(88,103,74,0.14)" }}>
+                <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#8a9079", margin: "0 0 3px" }}>Transportation</p>
+                <p style={{ margin: 0, fontSize: "0.95rem", color: "#474b40" }}>Joining the bus</p>
+              </div>
+            )}
+          </div>
+
+          {/* Message */}
+          {party.message && (
+            <div style={{ marginBottom: 20, padding: "16px 20px", borderLeft: `3px solid rgba(88,103,74,0.3)` }}>
+              <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#8a9079", margin: "0 0 6px" }}>Your note</p>
+              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "1.1rem", color: "#5b6051", margin: 0, lineHeight: 1.6 }}>
+                &ldquo;{party.message}&rdquo;
+              </p>
+            </div>
+          )}
+
+          {/* Footer note */}
+          <p style={{ fontSize: "0.8rem", color: "#9a9a8a", textAlign: "center", margin: "0 0 24px", lineHeight: 1.5 }}>
+            Need to make a change? Reach out to us directly and we&apos;ll sort it.
+          </p>
+
+          <button
+            onClick={() => router.push("/")}
+            style={{ width: "100%", background: G, color: "#f5f1e6", border: "none", padding: 16, borderRadius: 999, fontSize: "0.78rem", letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer" }}
+          >
+            Back to the invitation
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 
