@@ -95,14 +95,13 @@ input, select, textarea, button {
   --font-viaoda: "Viaoda Libre", serif;
 }
 
-/* Mobile: compact header so nav doesn't stack into many rows */
+/* Mobile: compact header — hide text nav links, keep logo + RSVP pill */
 @media (max-width: 600px) {
   .site-header-inner {
-    gap: 8px 16px !important;
+    gap: 0 !important;
   }
-  .site-nav {
-    gap: 4px 14px !important;
-    font-size: 0.68rem !important;
+  .site-nav-links {
+    display: none !important;
   }
 }
 

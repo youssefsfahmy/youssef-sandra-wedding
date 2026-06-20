@@ -146,7 +146,7 @@ export default function Home() {
         <title>Youssef &amp; Sandra — Wedding · September 19, 2026</title>
         <meta
           name="description"
-          content="Join us for a barefoot celebration by the sea at Dayra Camp — September 19, 2026."
+          content="Join us for a celebration by the sea at Dayra Camp — September 19, 2026."
         />
         <meta
           property="og:title"
@@ -154,7 +154,7 @@ export default function Home() {
         />
         <meta
           property="og:description"
-          content="Join us for a barefoot celebration by the sea at Dayra Camp."
+          content="Join us for a celebration by the sea at Dayra Camp."
         />
         <meta property="og:image" content="/open-graphs_optimized_300.png" />
         <link rel="icon" href="/favicon.ico" />
@@ -219,30 +219,32 @@ export default function Home() {
                 fontWeight: 500,
               }}
             >
-              <a
-                href="#ceremony"
-                style={{ color: "#6c7261", textDecoration: "none" }}
-              >
-                Ceremony
-              </a>
-              <a
-                href="#reception"
-                style={{ color: "#6c7261", textDecoration: "none" }}
-              >
-                Reception
-              </a>
-              <a
-                href="#venue"
-                style={{ color: "#6c7261", textDecoration: "none" }}
-              >
-                Venue
-              </a>
-              <a
-                href="#gifts"
-                style={{ color: "#6c7261", textDecoration: "none" }}
-              >
-                Gifts
-              </a>
+              <span className="site-nav-links" style={{ display: "contents" }}>
+                <a
+                  href="#ceremony"
+                  style={{ color: "#6c7261", textDecoration: "none" }}
+                >
+                  Ceremony
+                </a>
+                <a
+                  href="#reception"
+                  style={{ color: "#6c7261", textDecoration: "none" }}
+                >
+                  Reception
+                </a>
+                <a
+                  href="#venue"
+                  style={{ color: "#6c7261", textDecoration: "none" }}
+                >
+                  Venue
+                </a>
+                <a
+                  href="#gifts"
+                  style={{ color: "#6c7261", textDecoration: "none" }}
+                >
+                  Gifts
+                </a>
+              </span>
               <a
                 href="#rsvp"
                 style={{
@@ -428,7 +430,7 @@ export default function Home() {
                 margin: "6px 0 28px",
               }}
             >
-              A barefoot celebration by the sea · Dayra Camp
+              A celebration by the sea · Dayra Camp
             </p>
             <a
               href="#rsvp"
