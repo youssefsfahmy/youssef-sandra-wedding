@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// Local types for form management
 interface Member {
   firstName: string;
   lastName: string;
-  email?: string;
 }
 
 interface MemberWithId extends Member {
@@ -15,74 +13,50 @@ interface MemberWithId extends Member {
 
 interface PartyData {
   label: string;
+  partyLabel?: string;
   members: MemberWithId[];
   searchIndex: string[];
-  invitedToPrayer: boolean;
-  invitedToParty: boolean;
 }
 
 interface FormState {
   partyId: string;
   labelTemplate: string;
-  invitedToPrayer: boolean;
-  invitedToParty: boolean;
+  partyLabel: string;
   members: Member[];
 }
 
-// Label template options
 const LABEL_TEMPLATES = ["Sandra's family", "Youssef's family", "Friends"];
 
-// Utility functions
-const tokenize = (str: string): string[] => {
-  return str
+const tokenize = (str: string): string[] =>
+  str
     .toLowerCase()
-    .replace(/[^\w\s]/g, "") // Remove punctuation
+    .replace(/[^\w\s]/g, "")
     .split(/\s+/)
     .filter((token) => token.length > 0);
-};
 
-const buildSearchIndex = (label: string, members: Member[]): string[] => {
+const buildSearchIndex = (members: Member[]): string[] => {
   const tokens = new Set<string>();
-
-  // Add label tokens
-  // tokenize(label).forEach((token) => tokens.add(token));
-
-  // Add member name tokens
   members.forEach((member) => {
-    tokenize(member.firstName).forEach((token) => tokens.add(token));
-    tokenize(member.lastName).forEach((token) => tokens.add(token));
+    tokenize(member.firstName).forEach((t) => tokens.add(t));
+    tokenize(member.lastName).forEach((t) => tokens.add(t));
   });
-
   return Array.from(tokens);
 };
 
-const formatLabel = (template: string): string => {
-  return template.replace("{Custom}", "Group");
-};
-
-const generateMemberIds = (count: number): string[] => {
-  return Array.from(
-    { length: count },
-    (_, i) => `g-${String(i + 1).padStart(3, "0")}`
-  );
-};
+const generateMemberIds = (count: number): string[] =>
+  Array.from({ length: count }, (_, i) => `g-${String(i + 1).padStart(3, "0")}`);
 
 const PartyCreator: React.FC = () => {
   const [formState, setFormState] = useState<FormState>({
     partyId: `pty-${Math.random().toString(36).substring(2, 8)}`,
     labelTemplate: LABEL_TEMPLATES[0],
-    invitedToPrayer: false,
-    invitedToParty: true,
-    members: [{ firstName: "", lastName: "", email: "" }],
+    partyLabel: "",
+    members: [{ firstName: "", lastName: "" }],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Clear message after 5 seconds
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(null), 5000);
@@ -90,20 +64,14 @@ const PartyCreator: React.FC = () => {
     }
   }, [message]);
 
-  const showMessage = (type: "success" | "error", text: string) => {
-    setMessage({ type, text });
-  };
-
-  const updateFormState = (updates: Partial<FormState>) => {
+  const updateFormState = (updates: Partial<FormState>) =>
     setFormState((prev) => ({ ...prev, ...updates }));
-  };
 
-  const addMember = () => {
+  const addMember = () =>
     setFormState((prev) => ({
       ...prev,
-      members: [...prev.members, { firstName: "", lastName: "", email: "" }],
+      members: [...prev.members, { firstName: "", lastName: "" }],
     }));
-  };
 
   const removeMember = (index: number) => {
     if (formState.members.length > 1) {
@@ -114,121 +82,81 @@ const PartyCreator: React.FC = () => {
     }
   };
 
-  const updateMember = (index: number, field: keyof Member, value: string) => {
+  const updateMember = (index: number, field: keyof Member, value: string) =>
     setFormState((prev) => ({
       ...prev,
-      members: prev.members.map((member, i) =>
-        i === index ? { ...member, [field]: value } : member
-      ),
+      members: prev.members.map((m, i) => (i === index ? { ...m, [field]: value } : m)),
     }));
-  };
 
   const resetForm = () => {
     setFormState({
       partyId: `pty-${Math.random().toString(36).substring(2, 8)}`,
       labelTemplate: LABEL_TEMPLATES[0],
-      invitedToPrayer: false,
-      invitedToParty: true,
-      members: [{ firstName: "", lastName: "", email: "" }],
+      partyLabel: "",
+      members: [{ firstName: "", lastName: "" }],
     });
     setMessage(null);
   };
 
   const validateForm = (): string | null => {
     if (!formState.partyId.trim()) return "Party ID is required";
-
-    const validMembers = formState.members.filter(
-      (member) => member.firstName.trim() && member.lastName.trim()
-    );
-
-    if (validMembers.length === 0) {
-      return "At least one member with first and last name is required";
-    }
-
+    const valid = formState.members.filter((m) => m.firstName.trim() && m.lastName.trim());
+    if (valid.length === 0) return "At least one member with first and last name is required";
     return null;
   };
 
   const saveParty = async () => {
     const validation = validateForm();
     if (validation) {
-      showMessage("error", validation);
+      setMessage({ type: "error", text: validation });
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      // Filter out members without required fields
       const validMembers = formState.members.filter(
-        (member) => member.firstName.trim() && member.lastName.trim()
+        (m) => m.firstName.trim() && m.lastName.trim()
       );
-
-      // Generate member IDs
       const memberIds = generateMemberIds(validMembers.length);
+      const membersWithIds: MemberWithId[] = validMembers.map((m, i) => ({
+        id: memberIds[i],
+        firstName: m.firstName.trim(),
+        lastName: m.lastName.trim(),
+      }));
 
-      // Create members with IDs
-      const membersWithIds: MemberWithId[] = validMembers.map(
-        (member, index) => ({
-          id: memberIds[index],
-          firstName: member.firstName.trim(),
-          lastName: member.lastName.trim(),
-          ...(member.email?.trim() && { email: member.email.trim() }),
-        })
-      );
-
-      // Build final label
-      const label = formatLabel(formState.labelTemplate);
-
-      // Build search index
-      const searchIndex = buildSearchIndex(label, validMembers);
-
-      // Create party data
       const partyData: PartyData = {
-        label,
+        label: formState.labelTemplate,
+        ...(formState.partyLabel.trim() && { partyLabel: formState.partyLabel.trim() }),
         members: membersWithIds,
-        searchIndex,
-        invitedToPrayer: formState.invitedToPrayer,
-        invitedToParty: formState.invitedToParty,
+        searchIndex: buildSearchIndex(validMembers),
       };
 
-      // Save to Firestore
-      const partyRef = doc(db, "parties", formState.partyId);
-      await setDoc(partyRef, partyData, { merge: true });
-
-      showMessage("success", `Party saved successfully: ${formState.partyId}`);
+      await setDoc(doc(db, "parties", formState.partyId), partyData, { merge: true });
+      setMessage({ type: "success", text: `Party saved: ${formState.partyId}` });
       setFormState((prev) => ({
         ...prev,
         partyId: `pty-${Math.random().toString(36).substring(2, 8)}`,
       }));
     } catch (error) {
       console.error("Error saving party:", error);
-      showMessage(
-        "error",
-        `Failed to save party: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      setMessage({
+        type: "error",
+        text: `Failed to save: ${error instanceof Error ? error.message : "Unknown error"}`,
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const currentLabel = formState.labelTemplate;
   return (
     <main className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto max-w-2xl px-4">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          {/* Header */}
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Party Creator
-            </h1>
-            <p className="text-gray-600">
-              Create a new party for the event guest list
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Add Party</h1>
+            <p className="text-gray-600">Create a new party for the wedding guest list</p>
           </div>
 
-          {/* Message Toast */}
           {message && (
             <div
               className={`mb-6 p-4 rounded-lg ${
@@ -243,76 +171,49 @@ const PartyCreator: React.FC = () => {
 
           <div className="space-y-6">
             {/* Party ID */}
-            {/* Party ID */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Party ID *
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Party ID *</label>
               <input
                 type="text"
                 value={formState.partyId}
                 onChange={(e) => updateFormState({ partyId: e.target.value })}
                 placeholder="e.g., pty-001"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-1000 focus:border-primary-1000"
-                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
 
-            {/* Label Configuration */}
+            {/* Internal Label */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Party Label *
-              </label>
-              <div className="space-y-3">
-                <select
-                  value={formState.labelTemplate}
-                  onChange={(e) =>
-                    updateFormState({ labelTemplate: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-1000 focus:border-primary-1000"
-                  required
-                >
-                  {LABEL_TEMPLATES.map((template) => (
-                    <option key={template} value={template}>
-                      {template}
-                    </option>
-                  ))}
-                </select>
-
-                <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                  <strong>Preview:</strong> {currentLabel}
-                </div>
-              </div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Internal Label *</label>
+              <select
+                value={formState.labelTemplate}
+                onChange={(e) => updateFormState({ labelTemplate: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                {LABEL_TEMPLATES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
             </div>
 
-            {/* Invitation Settings */}
+            {/* Party Label (shown to guests) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Invitation Settings
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Party Label <span className="text-gray-400 font-normal">(shown to guests, optional)</span>
               </label>
-              <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formState.invitedToPrayer}
-                    onChange={(e) =>
-                      updateFormState({ invitedToPrayer: e.target.checked })
-                    }
-                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-1000"
-                  />
-                  <span className="ml-2 text-gray-700">
-                    Invited to Prayer Ceremony
-                  </span>
-                </label>
-              </div>
+              <input
+                type="text"
+                value={formState.partyLabel}
+                onChange={(e) => updateFormState({ partyLabel: e.target.value })}
+                placeholder="e.g., The Fahmy Family"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
             </div>
 
             {/* Members */}
             <div>
               <div className="flex justify-between items-center mb-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  Party Members *
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Party Members *</label>
                 <button
                   type="button"
                   onClick={addMember}
@@ -323,51 +224,30 @@ const PartyCreator: React.FC = () => {
               </div>
 
               <div className="border border-gray-300 rounded-lg overflow-hidden">
-                <div className="bg-gray-50 px-4 py-2 grid grid-cols-12 gap-2 text-sm font-medium text-gray-700">
+                <div className="bg-gray-50 px-4 py-2 grid grid-cols-9 gap-2 text-sm font-medium text-gray-700">
                   <div className="col-span-4">First Name *</div>
                   <div className="col-span-4">Last Name *</div>
-                  <div className="col-span-3">Email</div>
-                  <div className="col-span-1">Action</div>
+                  <div className="col-span-1"></div>
                 </div>
 
                 {formState.members.map((member, index) => (
-                  <div
-                    key={index}
-                    className="px-4 py-2 grid grid-cols-12 gap-2 border-t border-gray-200"
-                  >
+                  <div key={index} className="px-4 py-2 grid grid-cols-9 gap-2 border-t border-gray-200">
                     <div className="col-span-4">
                       <input
                         type="text"
                         value={member.firstName}
-                        onChange={(e) =>
-                          updateMember(index, "firstName", e.target.value)
-                        }
+                        onChange={(e) => updateMember(index, "firstName", e.target.value)}
                         placeholder="First name"
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-primary-1000 focus:border-primary-1000"
-                        required
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       />
                     </div>
                     <div className="col-span-4">
                       <input
                         type="text"
                         value={member.lastName}
-                        onChange={(e) =>
-                          updateMember(index, "lastName", e.target.value)
-                        }
+                        onChange={(e) => updateMember(index, "lastName", e.target.value)}
                         placeholder="Last name"
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-primary-1000 focus:border-primary-1000"
-                        required
-                      />
-                    </div>
-                    <div className="col-span-3">
-                      <input
-                        type="email"
-                        value={member.email || ""}
-                        onChange={(e) =>
-                          updateMember(index, "email", e.target.value)
-                        }
-                        placeholder="Email"
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-primary-1000 focus:border-primary-1000"
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       />
                     </div>
                     <div className="col-span-1">
@@ -389,7 +269,7 @@ const PartyCreator: React.FC = () => {
               </p>
             </div>
 
-            {/* Footer Actions */}
+            {/* Actions */}
             <div className="flex justify-between pt-6 border-t border-gray-200">
               <button
                 type="button"
@@ -406,7 +286,7 @@ const PartyCreator: React.FC = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                     Saving...
                   </>
                 ) : (

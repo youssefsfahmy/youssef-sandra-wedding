@@ -10,30 +10,26 @@ type HeadProps = {
 
 const Head: React.FC<HeadProps> = ({ children }) => {
   const defaultDescription =
-    "Join us and our families as we celebrate our engagement with the people we love. All engagement details are in this link.";
+    "Join us for a barefoot celebration by the sea at Dayra Camp — September 19, 2026.";
   const defaultImg = `/open-graphs_optimized_300.png`;
 
   return (
     <NextHead>
-      <title>{"Youssef and Sandra are getting engaged!"}</title>
+      <title>{"Youssef & Sandra — Wedding · September 19, 2026"}</title>
       <meta property="og:type" content="website" />
       <meta
         property="og:title"
-        content={"Youssef and Sandra are getting engaged!"}
+        content={"Youssef & Sandra — Wedding · September 19, 2026"}
       />
       <meta
         itemProp="name"
-        content={"Youssef and Sandra are getting engaged!"}
+        content={"Youssef & Sandra — Wedding · September 19, 2026"}
       />
       <meta itemProp="description" content={defaultDescription} />
       <meta property="og:description" content={defaultDescription} />
       <meta itemProp="image" content={defaultImg} />
       <meta property="og:image" content={defaultImg} />
       <link rel="icon" href="/favicon.ico" />
-      <meta
-        property="og:title"
-        content="Youssef and Sandra are getting engaged!"
-      />
       {children}
     </NextHead>
   );

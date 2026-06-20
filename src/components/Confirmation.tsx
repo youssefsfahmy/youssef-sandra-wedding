@@ -74,9 +74,9 @@ const Confirmation: React.FC<ConfirmationProps> = ({
 
       <div className="bg-linen rounded-lg p-4 border border-timberwolf">
         <h4 className="font-medium text-reseda-green mb-2">Party Details</h4>
-        {party.label && (
+        {party.partyLabel && (
           <p className="text-sm text-ash-gray mb-1">
-            <span className="font-medium">Party:</span> {party.label}
+            <span className="font-medium">Party:</span> {party.partyLabel}
           </p>
         )}
         <p className="text-sm text-ash-gray">

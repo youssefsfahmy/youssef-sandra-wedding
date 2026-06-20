@@ -146,16 +146,17 @@ const Step1PartySearch: React.FC<Step1PartySearchProps> = ({
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      {party.label && (
+                      {party.partyLabel && (
                         <h5 className="font-medium text-gray-900 mb-1">
-                          {party.label}
+                          {party.partyLabel}
                         </h5>
                       )}
                       <div className="text-sm text-gray-600">
                         <span className="font-medium">Guests: </span>
                         {party.members
                           .map(
-                            (member) => `${member.firstName} ${member.lastName}`
+                            (member) =>
+                              `${member.firstName} ${member.lastName}`,
                           )
                           .join(", ")}
                       </div>
