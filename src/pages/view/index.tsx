@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Party } from "@/types/rsvp";
 
@@ -17,6 +17,9 @@ const ViewPage: React.FC = () => {
   const [copiedPartyId, setCopiedPartyId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [submissionFilter, setSubmissionFilter] = useState<"all" | "submitted" | "pending">("all");
+  const [invitationFilter, setInvitationFilter] = useState<"all" | "sent" | "not-sent">("all");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const copyPartyLink = async (party: PartyWithSubmission) => {
     const link = `https://youssefxsandra.com?partyId=${party.id}`;
@@ -53,6 +56,7 @@ const ViewPage: React.FC = () => {
           hasSubmission: !!d.confirmationCode,
           submissionDate: d.createdAt ? new Date(d.createdAt).toLocaleString() : undefined,
           transport: d.transport,
+          invitationSent: !!d.invitationSent,
         };
       });
       setParties(data);
@@ -60,6 +64,42 @@ const ViewPage: React.FC = () => {
       setError(`Failed to fetch parties: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const toggleInvitationSent = async (party: PartyWithSubmission) => {
+    const next = !party.invitationSent;
+    setUpdatingId(party.id);
+    setError(null);
+    try {
+      await updateDoc(doc(db, "parties", party.id), { invitationSent: next });
+      setParties((prev) =>
+        prev.map((p) => (p.id === party.id ? { ...p, invitationSent: next } : p)),
+      );
+    } catch (err) {
+      setError(`Failed to update party: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const deleteParty = async (party: PartyWithSubmission) => {
+    const name = party.label || party.partyLabel || party.id;
+    if (
+      !window.confirm(
+        `Delete "${name}"? This permanently removes the party and any RSVP it submitted. This cannot be undone.`,
+      )
+    )
+      return;
+    setDeletingId(party.id);
+    setError(null);
+    try {
+      await deleteDoc(doc(db, "parties", party.id));
+      setParties((prev) => prev.filter((p) => p.id !== party.id));
+    } catch (err) {
+      setError(`Failed to delete party: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -78,6 +118,7 @@ const ViewPage: React.FC = () => {
     const notAttending = allGuests.filter((g) => g.rsvp === "no").length;
 
     const needsCoach = submitted.filter((p) => p.transport === true).length;
+    const invitationsSent = parties.filter((p) => p.invitationSent).length;
 
     return {
       totalParties: parties.length,
@@ -87,6 +128,7 @@ const ViewPage: React.FC = () => {
       attending,
       notAttending,
       needsCoach,
+      invitationsSent,
       responseRate: parties.length > 0
         ? ((submitted.length / parties.length) * 100).toFixed(1)
         : "0",
@@ -106,6 +148,9 @@ const ViewPage: React.FC = () => {
 
     if (submissionFilter === "submitted") filtered = filtered.filter((p) => p.hasSubmission);
     if (submissionFilter === "pending") filtered = filtered.filter((p) => !p.hasSubmission);
+
+    if (invitationFilter === "sent") filtered = filtered.filter((p) => p.invitationSent);
+    if (invitationFilter === "not-sent") filtered = filtered.filter((p) => !p.invitationSent);
 
     return filtered.sort((a, b) => (a.label || "").localeCompare(b.label || ""));
   };
@@ -200,7 +245,7 @@ const ViewPage: React.FC = () => {
                     Export CSV
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-2">Search by Name</label>
                     <input
@@ -221,6 +266,18 @@ const ViewPage: React.FC = () => {
                       <option value="all">All Parties</option>
                       <option value="submitted">Submitted</option>
                       <option value="pending">Pending</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">Invitation</label>
+                    <select
+                      value={invitationFilter}
+                      onChange={(e) => setInvitationFilter(e.target.value as typeof invitationFilter)}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                    >
+                      <option value="all">All</option>
+                      <option value="sent">Invitation sent</option>
+                      <option value="not-sent">Not sent</option>
                     </select>
                   </div>
                 </div>
@@ -248,7 +305,14 @@ const ViewPage: React.FC = () => {
                         {filtered.map((party) => (
                           <div key={party.id} className="border border-gray-200 rounded-lg p-4">
                             <div className="mb-3">
-                              <h3 className="font-semibold text-gray-900">{party.label}</h3>
+                              <div className="flex items-start justify-between gap-2">
+                                <h3 className="font-semibold text-gray-900">{party.label}</h3>
+                                {party.invitationSent && (
+                                  <span className="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                                    ✉ Invited
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-xs text-gray-500">ID: {party.id}</p>
                             </div>
 
@@ -283,13 +347,37 @@ const ViewPage: React.FC = () => {
                                 </div>
                               )}
 
-                              <div className="mt-3 pt-2 border-t border-gray-100">
+                              <div className="mt-3 pt-2 border-t border-gray-100 space-y-2">
                                 <button
                                   onClick={() => copyPartyLink(party)}
                                   className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 rounded-lg transition-colors"
                                 >
                                   {copiedPartyId === party.id ? "✓ Link Copied!" : "Copy RSVP Link"}
                                 </button>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => toggleInvitationSent(party)}
+                                    disabled={updatingId === party.id}
+                                    className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs rounded-lg border transition-colors disabled:opacity-50 ${
+                                      party.invitationSent
+                                        ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
+                                        : "bg-gray-50 hover:bg-gray-100 text-gray-600 border-gray-200"
+                                    }`}
+                                  >
+                                    {updatingId === party.id
+                                      ? "Saving…"
+                                      : party.invitationSent
+                                        ? "✓ Invitation sent"
+                                        : "Mark invited"}
+                                  </button>
+                                  <button
+                                    onClick={() => deleteParty(party)}
+                                    disabled={deletingId === party.id}
+                                    className="flex items-center justify-center gap-1 px-3 py-2 text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg transition-colors disabled:opacity-50"
+                                  >
+                                    {deletingId === party.id ? "Deleting…" : "Delete"}
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -430,8 +518,12 @@ const ViewPage: React.FC = () => {
                       <h3 className="text-lg font-semibold text-neutral-dark mb-4">Summary</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span>Parties invited:</span>
+                          <span>Total parties:</span>
                           <span className="font-medium">{totals.totalParties}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Invitations sent:</span>
+                          <span className="font-medium text-emerald-600">{totals.invitationsSent}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Responses received:</span>

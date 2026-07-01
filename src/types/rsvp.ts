@@ -18,6 +18,7 @@ export type Party = {
   guests?: GuestRSVP[];
   message?: string;
   transport?: boolean;
+  invitationSent?: boolean;
 };
 
 export type GuestRSVP = {

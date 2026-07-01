@@ -100,8 +100,8 @@ const PartyCreator: React.FC = () => {
 
   const validateForm = (): string | null => {
     if (!formState.partyId.trim()) return "Party ID is required";
-    const valid = formState.members.filter((m) => m.firstName.trim() && m.lastName.trim());
-    if (valid.length === 0) return "At least one member with first and last name is required";
+    const valid = formState.members.filter((m) => m.firstName.trim());
+    if (valid.length === 0) return "At least one member with a first name is required";
     return null;
   };
 
@@ -114,9 +114,7 @@ const PartyCreator: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const validMembers = formState.members.filter(
-        (m) => m.firstName.trim() && m.lastName.trim()
-      );
+      const validMembers = formState.members.filter((m) => m.firstName.trim());
       const memberIds = generateMemberIds(validMembers.length);
       const membersWithIds: MemberWithId[] = validMembers.map((m, i) => ({
         id: memberIds[i],
@@ -226,7 +224,9 @@ const PartyCreator: React.FC = () => {
               <div className="border border-gray-300 rounded-lg overflow-hidden">
                 <div className="bg-gray-50 px-4 py-2 grid grid-cols-9 gap-2 text-sm font-medium text-gray-700">
                   <div className="col-span-4">First Name *</div>
-                  <div className="col-span-4">Last Name *</div>
+                  <div className="col-span-4">
+                    Last Name <span className="text-gray-400 font-normal">(optional)</span>
+                  </div>
                   <div className="col-span-1"></div>
                 </div>
 
@@ -265,7 +265,7 @@ const PartyCreator: React.FC = () => {
               </div>
 
               <p className="text-xs text-gray-500 mt-2">
-                * At least one member with first and last name is required
+                * At least one member with a first name is required
               </p>
             </div>
 
