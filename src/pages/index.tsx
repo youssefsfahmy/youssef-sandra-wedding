@@ -291,6 +291,8 @@ export default function Home() {
           name="description"
           content="Join us for a celebration by the sea at Dayra Camp — September 19, 2026."
         />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.youssefxsandra.com/" />
         <meta
           property="og:title"
           content="Youssef & Sandra — Wedding · September 19, 2026"
@@ -299,7 +301,34 @@ export default function Home() {
           property="og:description"
           content="Join us for a celebration by the sea at Dayra Camp."
         />
-        <meta property="og:image" content="/og-image (4).png" />
+        <meta
+          property="og:image"
+          content="https://www.youssefxsandra.com/og-image.png"
+        />
+        <meta
+          property="og:image:secure_url"
+          content="https://www.youssefxsandra.com/og-image.png"
+        />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content="Youssef & Sandra — September 19, 2026"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Youssef & Sandra — Wedding · September 19, 2026"
+        />
+        <meta
+          name="twitter:description"
+          content="Join us for a celebration by the sea at Dayra Camp."
+        />
+        <meta
+          name="twitter:image"
+          content="https://www.youssefxsandra.com/og-image.png"
+        />
         <link rel="preload" as="image" href="/couple-anim.gif" />
         <link rel="icon" href="/favicon.ico" />
       </NextHead>

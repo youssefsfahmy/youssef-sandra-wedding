@@ -10,13 +10,14 @@ type HeadProps = {
 
 const Head: React.FC<HeadProps> = ({ children }) => {
   const defaultDescription =
-    "Join us for a barefoot celebration by the sea at Dayra Camp — September 19, 2026.";
-  const defaultImg = `/og-image (4).png`;
+    "Join us for a celebration by the sea at Dayra Camp — September 19, 2026.";
+  const defaultImg = "https://www.youssefxsandra.com/og-image.png";
 
   return (
     <NextHead>
       <title>{"Youssef & Sandra — Wedding · September 19, 2026"}</title>
       <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://www.youssefxsandra.com/" />
       <meta
         property="og:title"
         content={"Youssef & Sandra — Wedding · September 19, 2026"}
@@ -29,6 +30,12 @@ const Head: React.FC<HeadProps> = ({ children }) => {
       <meta property="og:description" content={defaultDescription} />
       <meta itemProp="image" content={defaultImg} />
       <meta property="og:image" content={defaultImg} />
+      <meta property="og:image:secure_url" content={defaultImg} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:image" content={defaultImg} />
       <link rel="icon" href="/favicon.ico" />
       {children}
     </NextHead>
