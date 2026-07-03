@@ -303,11 +303,11 @@ export default function Home() {
         />
         <meta
           property="og:image"
-          content="https://www.youssefxsandra.com/og-image.png"
+          content="https://www.youssefxsandra.com/og-image-1.png"
         />
         <meta
           property="og:image:secure_url"
-          content="https://www.youssefxsandra.com/og-image.png"
+          content="https://www.youssefxsandra.com/og-image-1.png"
         />
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:width" content="1200" />
@@ -327,7 +327,7 @@ export default function Home() {
         />
         <meta
           name="twitter:image"
-          content="https://www.youssefxsandra.com/og-image.png"
+          content="https://www.youssefxsandra.com/og-image-1.png"
         />
         <link rel="preload" as="image" href="/couple-anim.gif" />
         <link rel="icon" href="/favicon.ico" />
