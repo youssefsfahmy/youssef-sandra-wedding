@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "motion/react";
 
 interface Step {
   id: number;
@@ -22,7 +23,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps }) => {
       <div style={{ display: "flex", alignItems: "center" }}>
         {steps.map((step, i) => (
           <React.Fragment key={step.id}>
-            <div
+            <motion.div
+              animate={{
+                backgroundColor:
+                  step.isCompleted || step.isActive ? G : "rgba(88,103,74,0.12)",
+              }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               style={{
                 width: 28,
                 height: 28,
@@ -31,28 +37,33 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: step.isCompleted || step.isActive ? G : "rgba(88,103,74,0.12)",
-                transition: "background 0.3s ease",
               }}
             >
               {step.isCompleted ? (
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <motion.svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 13 13"
+                  fill="none"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                >
                   <path d="M2.5 6.5L5.5 9.5L10.5 4" stroke="#f5f1e6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                </motion.svg>
               ) : (
                 <span style={{ fontSize: "0.7rem", color: step.isActive ? "#f5f1e6" : "#9a9a8a", fontWeight: 600 }}>
                   {step.id}
                 </span>
               )}
-            </div>
+            </motion.div>
             {i < steps.length - 1 && (
-              <div
-                style={{
-                  flex: 1,
-                  height: 1,
-                  background: currentIndex > i ? G : "rgba(88,103,74,0.18)",
-                  transition: "background 0.3s ease",
+              <motion.div
+                animate={{
+                  backgroundColor: currentIndex > i ? G : "rgba(88,103,74,0.18)",
                 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                style={{ flex: 1, height: 1 }}
               />
             )}
           </React.Fragment>

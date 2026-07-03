@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { motion, AnimatePresence } from "motion/react";
 import ProgressBar from "@/components/ProgressBar";
 import WeddingRSVP from "@/components/CombinedRSVP";
 import Confirmation from "@/components/Confirmation";
@@ -183,28 +184,46 @@ const RSVPForm: React.FC = () => {
         )}
 
           <div className="mb-8">
-            {currentStep === 1 && formState.party && (
-              <WeddingRSVP
-                guests={formState.party.members}
-                rsvpsByGuest={formState.rsvpsByGuest}
-                onRSVPChange={handleRSVPChange}
-                transport={formState.transport}
-                onTransportChange={handleTransportChange}
-              />
-            )}
-            {currentStep === 2 && formState.party && (
-              <Confirmation
-                party={formState.party}
-                guests={formState.party.members}
-                rsvpsByGuest={formState.rsvpsByGuest}
-                confirmationCode={formState.confirmationCode || formState.party.confirmationCode}
-                isSubmitted={!!formState.confirmationCode}
-                onSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-                handleMessageChange={handleMessageChange}
-                transport={formState.transport}
-              />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {currentStep === 1 && formState.party && (
+                <motion.div
+                  key="step-1"
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -24 }}
+                  transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}
+                >
+                  <WeddingRSVP
+                    guests={formState.party.members}
+                    rsvpsByGuest={formState.rsvpsByGuest}
+                    onRSVPChange={handleRSVPChange}
+                    transport={formState.transport}
+                    onTransportChange={handleTransportChange}
+                  />
+                </motion.div>
+              )}
+              {currentStep === 2 && formState.party && (
+                <motion.div
+                  key="step-2"
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -24 }}
+                  transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}
+                >
+                  <Confirmation
+                    party={formState.party}
+                    guests={formState.party.members}
+                    rsvpsByGuest={formState.rsvpsByGuest}
+                    confirmationCode={formState.confirmationCode || formState.party.confirmationCode}
+                    isSubmitted={!!formState.confirmationCode}
+                    onSubmit={handleSubmit}
+                    isSubmitting={isSubmitting}
+                    handleMessageChange={handleMessageChange}
+                    transport={formState.transport}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
         </div>
 
         {!formState.confirmationCode && (

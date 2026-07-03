@@ -31,64 +31,8 @@ input, select, textarea, button {
   font-family: inherit;
 }
 
-@keyframes floatY {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(var(--fy, -13px)); }
-}
-
-@keyframes sway {
-  0%, 100% { transform: rotate(calc(var(--sw, 2.6deg) * -1)); }
-  50% { transform: rotate(var(--sw, 2.6deg)); }
-}
-
-@keyframes breathe {
-  0%, 100% { opacity: var(--bmin, 0.5); }
-  50% { opacity: 1; }
-}
-
-@keyframes waveDrift {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(calc(var(--wd, 18px) * -1)); }
-}
-
-.float-y {
-  animation: floatY 6.5s ease-in-out infinite;
-}
-
-.float-sway {
-  animation: sway 7s ease-in-out infinite;
-  transform-origin: 50% 100%;
-}
-
-.float-breathe {
-  animation: breathe 4s ease-in-out infinite;
-}
-
-.float-wave {
-  animation: waveDrift 9s ease-in-out infinite;
-}
-
-.draw-path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  transition: stroke-dashoffset 2s cubic-bezier(.45,0,.2,1);
-}
-
-.draw-path.drawn {
-  stroke-dashoffset: 0;
-}
-
-.reveal-section {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1);
-  will-change: opacity, transform;
-}
-
-.reveal-section.revealed {
-  opacity: 1;
-  transform: none;
-}
+/* All motion is handled by Framer Motion (see src/pages/index.tsx and
+   the animated components) — no CSS keyframes needed. */
 
 :root {
   --font-montserrat: "Montserrat", sans-serif;

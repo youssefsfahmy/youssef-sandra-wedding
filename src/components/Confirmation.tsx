@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "motion/react";
 import type { Guest, GuestRSVP, Party } from "@/types/rsvp";
 import { useRouter } from "next/router";
 
@@ -30,10 +31,27 @@ const Confirmation: React.FC<ConfirmationProps> = ({
 
   if (confirmationCode) {
     return (
-      <div style={{ textAlign: "center", padding: "12px 0" }}>
+      <motion.div
+        style={{ textAlign: "center", padding: "12px 0" }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+      >
         <svg viewBox="0 0 80 80" style={{ width: 64, height: 64, margin: "0 auto 20px", display: "block" }} fill="none" stroke={G} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="40" cy="40" r="34" />
-          <path d="M24,40 L34,50 L56,30" />
+          <motion.circle
+            cx="40"
+            cy="40"
+            r="34"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+          />
+          <motion.path
+            d="M24,40 L34,50 L56,30"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.35, delay: 0.5, ease: "easeOut" }}
+          />
         </svg>
         <p style={{ fontFamily: "'Tangerine', cursive", fontSize: "2.2rem", color: G, margin: "0 0 10px" }}>
           We&apos;re thrilled!
@@ -50,7 +68,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
         >
           Back to the invitation
         </button>
-      </div>
+      </motion.div>
     );
   }
 
@@ -117,7 +135,11 @@ const Confirmation: React.FC<ConfirmationProps> = ({
       >
         {isSubmitting ? (
           <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-            <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+            <motion.span
+              animate={{ rotate: 360 }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+              style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block" }}
+            />
             Sending…
           </span>
         ) : (

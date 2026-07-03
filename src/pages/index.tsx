@@ -1,11 +1,27 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import NextHead from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
+import { motion, AnimatePresence } from "motion/react";
+import { animate, inView } from "motion";
 import { searchParties, getParty } from "@/utils/firebase";
 import type { Party } from "@/types/rsvp";
 
 const G = "#58674a";
 const TEAL = "#46606a";
+
+// useLayoutEffect on the client, useEffect on the server (avoids SSR warning)
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+const EASE_OUT = [0.2, 0.7, 0.2, 1] as const;
+const EASE_INTRO = [0.62, 0.04, 0.2, 1] as const;
 
 export default function Home() {
   const router = useRouter();
@@ -18,20 +34,23 @@ export default function Home() {
 
   // ---- Intro animation (couple illustration) ----
   const illoRef = useRef<HTMLImageElement>(null);
+  const [illoSrc, setIlloSrc] = useState("/couple-first.png");
   const [introStage, setIntroStage] = useState<"paused" | "playing" | "done">(
     "paused",
   );
-  const [pausedTf, setPausedTf] = useState("");
   const [splashTextTop, setSplashTextTop] = useState<number | null>(null);
   const [illoReady, setIlloReady] = useState(false);
+  const introRanRef = useRef(false);
 
   // Place a small, centred splash version of the illustration that will
   // GROW into its (larger) resting slot above the names when clicked.
+  // Measured against the untransformed "home" box, then positioned with
+  // Framer Motion's animate (x/y/scale composited on the GPU).
   const recalcIntro = useCallback(() => {
     const el = illoRef.current;
     if (!el) return;
-    // Measure the untransformed resting (home) box
-    el.style.transform = "none";
+    // Clear any transform so we measure the true resting box
+    animate(el, { x: 0, y: 0, scale: 1 }, { duration: 0 });
     const r = el.getBoundingClientRect();
     if (!r.height) {
       requestAnimationFrame(recalcIntro);
@@ -39,17 +58,26 @@ export default function Home() {
     }
     const targetH = Math.min(window.innerHeight * 0.32, 250); // small start
     const s = targetH / r.height; // < 1 → starts smaller, grows to home
-    const homeCX = r.left + r.width / 2;
-    const homeCY = r.top + r.height / 2;
-    const vpCX = window.innerWidth / 2;
     const vpCY = window.innerHeight * 0.42;
-    const dx = vpCX - homeCX;
-    const dy = vpCY - homeCY;
-    const tf = `translate(${dx}px, ${dy}px) scale(${s})`;
-    el.style.transform = tf; // apply immediately to avoid a flash
-    setPausedTf(tf);
+    const dx = window.innerWidth / 2 - (r.left + r.width / 2);
+    const dy = vpCY - (r.top + r.height / 2);
+    animate(el, { x: dx, y: dy, scale: s }, { duration: 0 });
     setSplashTextTop(vpCY + targetH / 2 + 26);
     setIlloReady(true);
+  }, []);
+
+  // Deep links (e.g. /#rsvp) skip the intro splash entirely so the browser
+  // can scroll straight to the section.
+  useIsoLayoutEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash !== "#" && hash !== "#top") {
+      setIntroStage("done");
+      setIlloSrc("/couple-last.png");
+      requestAnimationFrame(() => {
+        document.querySelector(hash)?.scrollIntoView();
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -60,13 +88,16 @@ export default function Home() {
     return () => window.removeEventListener("resize", onResize);
   }, [introStage, recalcIntro]);
 
-  // Lock the page while the intro is on screen
+  // Lock the page while the intro splash is on screen
   useEffect(() => {
-    if (introStage !== "done") {
+    if (introStage === "paused" || introStage === "playing") {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
-      window.scrollTo(0, 0);
+      if (introRanRef.current) {
+        window.scrollTo(0, 0);
+        introRanRef.current = false;
+      }
     }
     return () => {
       document.body.style.overflow = "";
@@ -76,87 +107,132 @@ export default function Home() {
   const handleViewInvite = useCallback(() => {
     if (introStage !== "paused") return;
     const el = illoRef.current;
-    if (el) el.src = "/couple-anim.gif";
+    introRanRef.current = true;
+    setIlloSrc("/couple-anim.gif");
+    if (el) {
+      // Grow into the resting slot
+      animate(
+        el,
+        { x: 0, y: 0, scale: 1 },
+        { duration: 2.2, ease: EASE_INTRO },
+      );
+    }
     setIntroStage("playing");
     window.setTimeout(() => {
-      if (illoRef.current) illoRef.current.src = "/couple-last.png";
+      setIlloSrc("/couple-last.png");
       setIntroStage("done");
     }, 2950);
   }, [introStage]);
 
   const introActive = introStage !== "done";
 
-  // Animations
+  // Animations — powered by Framer Motion (GPU-composited, WAAPI-backed)
   useEffect(() => {
-    // Float animations
-    const floatMap: Record<string, string> = {
-      floatY: "floatY 6.5s ease-in-out infinite",
-      sway: "sway 7s ease-in-out infinite",
-      breathe: "breathe 4s ease-in-out infinite",
-      wave: "waveDrift 9s ease-in-out infinite",
+    const cleanups: Array<() => void> = [];
+
+    // Ambient float / sway / breathe / wave loops
+    const floatKeyframes: Record<string, Record<string, number[]>> = {
+      floatY: { y: [0, -13, 0] },
+      sway: { rotate: [-2.6, 2.6, -2.6] },
+      breathe: { opacity: [0.5, 1, 0.5] },
+      wave: { x: [0, -18, 0] },
+    };
+    const floatDuration: Record<string, number> = {
+      floatY: 6.5,
+      sway: 7,
+      breathe: 4,
+      wave: 9,
     };
     document.querySelectorAll<HTMLElement>("[data-float]").forEach((el) => {
+      // Ambient loops run for the page's lifetime. We intentionally do NOT
+      // stop them on cleanup — under React StrictMode the effect double-runs,
+      // and stopping froze the WAAPI loop mid-flight. Guard so each element is
+      // only ever animated once.
+      if (el.dataset.floatInit) return;
+      el.dataset.floatInit = "1";
       const t = el.getAttribute("data-float") || "floatY";
-      const delay = el.getAttribute("data-delay") || "0";
-      const anim = floatMap[t] || floatMap.floatY;
-      el.style.animation = anim.replace("infinite", `${delay}s infinite`);
+      const delay = parseFloat(el.getAttribute("data-delay") || "0");
+      if (t === "sway") el.style.transformOrigin = "50% 100%";
+      animate(el, floatKeyframes[t] || floatKeyframes.floatY, {
+        duration: floatDuration[t] || 6.5,
+        delay,
+        repeat: Infinity,
+        repeatType: "loop",
+        ease: "easeInOut",
+      });
     });
 
-    // SVG draw on scroll
-    const drawEls = document.querySelectorAll<
-      SVGPathElement | SVGCircleElement
-    >("[data-draw]");
-    drawEls.forEach((p) => {
-      let L = 300;
-      try {
-        if ("getTotalLength" in p)
-          L = (p as SVGGeometryElement).getTotalLength();
-      } catch {}
-      const delay = parseFloat(p.getAttribute("data-delay") || "0");
-      p.style.strokeDasharray = String(L);
-      p.style.strokeDashoffset = String(L);
-      p.style.transition = `stroke-dashoffset 2s cubic-bezier(.45,0,.2,1) ${delay}s`;
+    // SVG draw-on-scroll. IntersectionObserver is unreliable on inline SVG
+    // child elements (paths/circles have no reliable box), so we observe the
+    // parent <svg> (a real box) and draw all its data-draw children when it
+    // enters view.
+    const drawSvgs = new Set<SVGSVGElement>();
+    document
+      .querySelectorAll<SVGGeometryElement>("[data-draw]")
+      .forEach((p) => {
+        let L = 300;
+        try {
+          if ("getTotalLength" in p) L = p.getTotalLength();
+        } catch {}
+        p.style.strokeDasharray = String(L);
+        p.style.strokeDashoffset = String(L);
+        p.dataset.len = String(L);
+        const svg = p.closest("svg");
+        if (svg) drawSvgs.add(svg);
+      });
+    drawSvgs.forEach((svg) => {
+      // Optional per-svg trigger margin (rootMargin). e.g. the hero wave holds
+      // until it is 30% up from the bottom of the viewport.
+      const drawMargin = svg.getAttribute("data-draw-margin") || undefined;
+      let stop: (() => void) | undefined;
+      // eslint-disable-next-line prefer-const
+      stop = inView(
+        svg,
+        () => {
+          svg
+            .querySelectorAll<SVGGeometryElement>("[data-draw]")
+            .forEach((p) => {
+              const L = parseFloat(p.dataset.len || "300");
+              const delay = parseFloat(p.getAttribute("data-delay") || "0");
+              // Motion's animate() no-ops on strokeDashoffset for SVG geometry,
+              // so drive the stroke draw with the native WAAPI (smooth + GPU).
+              p.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }], {
+                duration: 2000,
+                delay: delay * 1000,
+                easing: "cubic-bezier(.45,0,.2,1)",
+                fill: "forwards",
+              });
+            });
+          stop?.();
+        },
+        drawMargin
+          ? { amount: "some", margin: drawMargin as `${number}px` }
+          : { amount: 0.15 },
+      );
+      cleanups.push(() => stop?.());
     });
 
-    const drawObs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            (e.target as HTMLElement).style.strokeDashoffset = "0";
-            drawObs.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 },
-    );
-    drawEls.forEach((p) => drawObs.observe(p));
-
-    // Scroll reveal
-    const reveals = document.querySelectorAll<HTMLElement>(".js-reveal");
-    reveals.forEach((el) => {
+    // Scroll reveal (fade + rise once in view)
+    document.querySelectorAll<HTMLElement>(".js-reveal").forEach((el) => {
       el.style.opacity = "0";
-      el.style.transform = "translateY(24px)";
-      el.style.transition =
-        "opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1)";
+      let stop: (() => void) | undefined;
+      // eslint-disable-next-line prefer-const
+      stop = inView(
+        el,
+        () => {
+          animate(
+            el,
+            { opacity: [0, 1], y: [24, 0] },
+            { duration: 1.0, ease: EASE_OUT },
+          );
+          stop?.();
+        },
+        { amount: 0.1 },
+      );
+      cleanups.push(() => stop?.());
     });
-    const revObs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            (e.target as HTMLElement).style.opacity = "1";
-            (e.target as HTMLElement).style.transform = "none";
-            revObs.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-    reveals.forEach((el) => revObs.observe(el));
 
-    return () => {
-      drawObs.disconnect();
-      revObs.disconnect();
-    };
+    return () => cleanups.forEach((fn) => fn());
   }, []);
 
   // Handle ?partyId= invite links from the admin dashboard
@@ -224,7 +300,6 @@ export default function Home() {
           content="Join us for a celebration by the sea at Dayra Camp."
         />
         <meta property="og:image" content="/open-graphs_optimized_300.png" />
-        <link rel="preload" as="image" href="/couple-first.png" />
         <link rel="preload" as="image" href="/couple-anim.gif" />
         <link rel="icon" href="/favicon.ico" />
       </NextHead>
@@ -240,91 +315,103 @@ export default function Home() {
         }}
       >
         {/* ==================== INTRO SPLASH ==================== */}
-        {introActive && (
-          <>
-            {/* Cream backdrop that fades away as the couple flies in */}
-            <div
-              aria-hidden="true"
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "#f5f1e6",
-                zIndex: 100,
-                opacity: introStage === "paused" ? 1 : 0,
-                transition: "opacity 1.3s ease 0.2s",
-                pointerEvents: introStage === "paused" ? "auto" : "none",
-              }}
-            />
-            {/* Splash text + button */}
-            <div
-              style={{
-                position: "fixed",
-                left: 0,
-                right: 0,
-                top: splashTextTop ?? undefined,
-                bottom: splashTextTop == null ? "12vh" : undefined,
-                zIndex: 120,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 18,
-                padding: "0 24px",
-                textAlign: "center",
-                opacity: introStage === "paused" && illoReady ? 1 : 0,
-                transition: "opacity 0.55s ease",
-                pointerEvents: introStage === "paused" ? "auto" : "none",
-              }}
-            >
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.72rem",
-                    letterSpacing: "0.34em",
-                    textTransform: "uppercase",
-                    color: "#8a9079",
-                    margin: "0 0 2px",
-                  }}
-                >
-                  The wedding of
-                </p>
-                <p
-                  style={{
-                    fontFamily: "'Tangerine', cursive",
-                    fontWeight: 400,
-                    color: G,
-                    fontSize: "clamp(2.6rem, 9vw, 3.8rem)",
-                    lineHeight: 1,
-                    margin: 0,
-                  }}
-                >
-                  Youssef &amp; Sandra
-                </p>
-              </div>
-              <button
-                onClick={handleViewInvite}
+        <AnimatePresence>
+          {introActive && (
+            <>
+              {/* Cream backdrop that fades away as the couple grows in */}
+              <motion.div
+                key="intro-backdrop"
+                aria-hidden="true"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: introStage === "paused" ? 1 : 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.3, ease: "easeInOut" }}
                 style={{
-                  display: "inline-flex",
+                  position: "fixed",
+                  inset: 0,
+                  background: "#f5f1e6",
+                  zIndex: 100,
+                  pointerEvents: introStage === "paused" ? "auto" : "none",
+                }}
+              />
+              {/* Splash text + button */}
+              <motion.div
+                key="intro-splash"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: introStage === "paused" && illoReady ? 1 : 0,
+                }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55, ease: "easeInOut" }}
+                style={{
+                  position: "fixed",
+                  left: 0,
+                  right: 0,
+                  top: splashTextTop ?? undefined,
+                  bottom: splashTextTop == null ? "12vh" : undefined,
+                  zIndex: 120,
+                  display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  gap: 12,
-                  background: G,
-                  color: "#f5f1e6",
-                  border: "none",
-                  padding: "16px 40px",
-                  borderRadius: 999,
-                  fontSize: "0.78rem",
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  boxShadow: "0 16px 34px -18px rgba(88,103,74,0.8)",
+                  gap: 18,
+                  padding: "0 24px",
+                  textAlign: "center",
+                  pointerEvents: introStage === "paused" ? "auto" : "none",
                 }}
               >
-                View invitation
-                <span style={{ fontSize: "1rem", lineHeight: 0 }}>→</span>
-              </button>
-            </div>
-          </>
-        )}
+                <div>
+                  <p
+                    style={{
+                      fontSize: "0.72rem",
+                      letterSpacing: "0.34em",
+                      textTransform: "uppercase",
+                      color: "#8a9079",
+                      margin: "0 0 2px",
+                    }}
+                  >
+                    The wedding of
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Tangerine', cursive",
+                      fontWeight: 400,
+                      color: G,
+                      fontSize: "clamp(2.6rem, 9vw, 3.8rem)",
+                      lineHeight: 1,
+                      margin: 0,
+                    }}
+                  >
+                    Youssef &amp; Sandra
+                  </p>
+                </div>
+                <motion.button
+                  onClick={handleViewInvite}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 12,
+                    background: G,
+                    color: "#f5f1e6",
+                    border: "none",
+                    padding: "16px 40px",
+                    borderRadius: 999,
+                    fontSize: "0.78rem",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: "0 16px 34px -18px rgba(88,103,74,0.8)",
+                  }}
+                >
+                  View invitation
+                  <span style={{ fontSize: "1rem", lineHeight: 0 }}>→</span>
+                </motion.button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* ==================== HEADER ==================== */}
         <header
@@ -443,11 +530,16 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Couple illustration — flies in from the intro splash */}
-          <img
+          {/* Couple illustration — flies in from the intro splash.
+              unoptimized so the animation GIF plays and src swaps cleanly. */}
+          <Image
             ref={illoRef}
-            src="/couple-first.png"
+            src={illoSrc}
             alt="Youssef and Sandra"
+            width={530}
+            height={600}
+            unoptimized
+            priority
             draggable={false}
             onLoad={() => {
               if (introStage === "paused") recalcIntro();
@@ -459,12 +551,7 @@ export default function Home() {
               margin: "10px auto 0",
               position: introActive ? "relative" : "static",
               zIndex: introActive ? 110 : "auto",
-              transform: introStage === "paused" ? pausedTf : "none",
               transformOrigin: "center center",
-              transition:
-                introStage === "playing"
-                  ? "transform 2.2s cubic-bezier(.62,.04,.2,1)"
-                  : "none",
               opacity: introStage === "paused" && !illoReady ? 0 : 1,
               willChange: "transform",
               pointerEvents: "none",
@@ -559,6 +646,7 @@ export default function Home() {
             viewBox="0 0 1200 130"
             preserveAspectRatio="none"
             data-float="wave"
+            data-draw-margin="0px 0px -30% 0px"
             style={{
               position: "absolute",
               left: "-3%",
@@ -604,21 +692,19 @@ export default function Home() {
           >
             <div
               style={{
+                position: "relative",
                 width: "100%",
-                height: "clamp(300px, 46vw, 560px)",
+                height: "clamp(400px, 40vw, 560px)",
                 borderRadius: 22,
                 overflow: "hidden",
               }}
             >
-              <img
-                src="/a25a43cc-590f-4e8c-8e98-994545598a4f.JPG"
+              <Image
+                src="/couple-photo.png"
                 alt="Youssef and Sandra"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
+                fill
+                sizes="(max-width: 1180px) 100vw, 1180px"
+                style={{ objectFit: "cover" }}
               />
             </div>
           </div>
@@ -1093,21 +1179,19 @@ export default function Home() {
             <div style={{ order: 2 }}>
               <div
                 style={{
+                  position: "relative",
                   width: "100%",
                   height: "clamp(220px, 30vw, 320px)",
                   borderRadius: 20,
                   overflow: "hidden",
                 }}
               >
-                <img
+                <Image
                   src="/dayra-1.png"
                   alt="Dayra Camp"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 450px"
+                  style={{ objectFit: "cover" }}
                 />
               </div>
             </div>
@@ -1387,26 +1471,37 @@ export default function Home() {
                       }}
                     />
                   </label>
-                  <button
+                  <motion.button
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
+                    whileTap={
+                      isSearching || !searchTerm.trim()
+                        ? undefined
+                        : { scale: 0.98 }
+                    }
+                    animate={{
+                      backgroundColor:
+                        isSearching || !searchTerm.trim()
+                          ? "rgba(88,103,74,0)"
+                          : G,
+                      color:
+                        isSearching || !searchTerm.trim()
+                          ? "#9a9a8a"
+                          : "#f5f1e6",
+                      borderColor:
+                        isSearching || !searchTerm.trim() ? "#cdd1c1" : G,
+                    }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                     style={{
                       width: "100%",
-                      background:
-                        isSearching || !searchTerm.trim() ? "transparent" : G,
-                      color:
-                        isSearching || !searchTerm.trim() ? "#9a9a8a" : "#f5f1e6",
-                      border:
-                        isSearching || !searchTerm.trim()
-                          ? "1px solid #cdd1c1"
-                          : `1px solid ${G}`,
+                      borderWidth: 1,
+                      borderStyle: "solid",
                       padding: 18,
                       borderRadius: 999,
                       fontSize: "0.8rem",
                       letterSpacing: "0.18em",
                       textTransform: "uppercase",
                       fontWeight: 600,
-                      transition: "all 0.2s ease",
                       cursor:
                         isSearching || !searchTerm.trim()
                           ? "not-allowed"
@@ -1414,7 +1509,7 @@ export default function Home() {
                     }}
                   >
                     {isSearching ? "Searching…" : "Find my invitation"}
-                  </button>
+                  </motion.button>
                 </form>
 
                 {hasSearched && searchResults.length > 0 && (
