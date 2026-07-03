@@ -299,7 +299,7 @@ export default function Home() {
           property="og:description"
           content="Join us for a celebration by the sea at Dayra Camp."
         />
-        <meta property="og:image" content="/couple-photo (2).png" />
+        <meta property="og:image" content="/og-image (4).png" />
         <link rel="preload" as="image" href="/couple-anim.gif" />
         <link rel="icon" href="/favicon.ico" />
       </NextHead>

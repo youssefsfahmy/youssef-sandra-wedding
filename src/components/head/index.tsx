@@ -11,7 +11,7 @@ type HeadProps = {
 const Head: React.FC<HeadProps> = ({ children }) => {
   const defaultDescription =
     "Join us for a barefoot celebration by the sea at Dayra Camp — September 19, 2026.";
-  const defaultImg = `/couple-photo_1_optimized_300.png`;
+  const defaultImg = `/og-image (4).png`;
 
   return (
     <NextHead>
