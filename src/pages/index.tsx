@@ -21,7 +21,6 @@ const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const EASE_OUT = [0.2, 0.7, 0.2, 1] as const;
-const EASE_INTRO = [0.62, 0.04, 0.2, 1] as const;
 
 export default function Home() {
   const router = useRouter();
@@ -32,47 +31,22 @@ export default function Home() {
   const [searchError, setSearchError] = useState("");
   const [preloadedParty, setPreloadedParty] = useState<Party | null>(null);
 
-  // ---- Intro animation (couple illustration) ----
-  const illoRef = useRef<HTMLImageElement>(null);
-  const [illoSrc, setIlloSrc] = useState("/couple-first.png");
+  // ---- Intro ----
+  // Paused: couple video's first frame (poster) + text + button. Click plays
+  // the couple video once, then reveals the site; the sparkles then loop
+  // behind the hero.
   const [introStage, setIntroStage] = useState<"paused" | "playing" | "done">(
     "paused",
   );
-  const [splashTextTop, setSplashTextTop] = useState<number | null>(null);
-  const [illoReady, setIlloReady] = useState(false);
+  const coupleVideoRef = useRef<HTMLVideoElement>(null);
   const introRanRef = useRef(false);
 
-  // Place a small, centred splash version of the illustration that will
-  // GROW into its (larger) resting slot above the names when clicked.
-  // Measured against the untransformed "home" box, then positioned with
-  // Framer Motion's animate (x/y/scale composited on the GPU).
-  const recalcIntro = useCallback(() => {
-    const el = illoRef.current;
-    if (!el) return;
-    // Clear any transform so we measure the true resting box
-    animate(el, { x: 0, y: 0, scale: 1 }, { duration: 0 });
-    const r = el.getBoundingClientRect();
-    if (!r.height) {
-      requestAnimationFrame(recalcIntro);
-      return;
-    }
-    const targetH = Math.min(window.innerHeight * 0.32, 250); // small start
-    const s = targetH / r.height; // < 1 → starts smaller, grows to home
-    const vpCY = window.innerHeight * 0.42;
-    const dx = window.innerWidth / 2 - (r.left + r.width / 2);
-    const dy = vpCY - (r.top + r.height / 2);
-    animate(el, { x: dx, y: dy, scale: s }, { duration: 0 });
-    setSplashTextTop(vpCY + targetH / 2 + 26);
-    setIlloReady(true);
-  }, []);
-
-  // Deep links (e.g. /#rsvp) skip the intro splash entirely so the browser
-  // can scroll straight to the section.
+  // Deep links (e.g. /#rsvp) skip the intro entirely so the browser can
+  // scroll straight to the section.
   useIsoLayoutEffect(() => {
     const hash = window.location.hash;
     if (hash && hash !== "#" && hash !== "#top") {
       setIntroStage("done");
-      setIlloSrc("/couple-last.png");
       requestAnimationFrame(() => {
         document.querySelector(hash)?.scrollIntoView();
       });
@@ -80,17 +54,9 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Lock the page while the intro is on screen
   useEffect(() => {
-    if (introStage !== "paused") return;
-    requestAnimationFrame(recalcIntro);
-    const onResize = () => recalcIntro();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [introStage, recalcIntro]);
-
-  // Lock the page while the intro splash is on screen
-  useEffect(() => {
-    if (introStage === "paused" || introStage === "playing") {
+    if (introStage !== "done") {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -106,22 +72,11 @@ export default function Home() {
 
   const handleViewInvite = useCallback(() => {
     if (introStage !== "paused") return;
-    const el = illoRef.current;
     introRanRef.current = true;
-    setIlloSrc("/couple-anim.gif");
-    if (el) {
-      // Grow into the resting slot
-      animate(
-        el,
-        { x: 0, y: 0, scale: 1 },
-        { duration: 2.2, ease: EASE_INTRO },
-      );
-    }
     setIntroStage("playing");
-    window.setTimeout(() => {
-      setIlloSrc("/couple-last.png");
-      setIntroStage("done");
-    }, 2950);
+    coupleVideoRef.current?.play().catch(() => {});
+    // Fallback in case the video's `ended` event never fires (load error).
+    window.setTimeout(() => setIntroStage("done"), 9000);
   }, [introStage]);
 
   const introActive = introStage !== "done";
@@ -283,6 +238,37 @@ export default function Home() {
     }
   };
 
+  // Download an .ics the guest can add to Apple / Google / Outlook calendars
+  const handleAddToCalendar = () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//youssefxsandra.com//Wedding//EN",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:youssef-sandra-wedding-20260919@youssefxsandra.com",
+      "DTSTAMP:20260101T000000Z",
+      "DTSTART:20260919T123000",
+      "DTEND:20260919T230000",
+      "SUMMARY:Youssef & Sandra's Wedding",
+      "DESCRIPTION:Ceremony at Saint Mary & Saint Athanasius Church\\, then a celebration at Dayra Camp. RSVP: https://www.youssefxsandra.com",
+      "LOCATION:Dayra Camp",
+      "URL:https://www.youssefxsandra.com",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "youssef-and-sandra-wedding.ics";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <NextHead>
@@ -329,7 +315,12 @@ export default function Home() {
           name="twitter:image"
           content="https://www.youssefxsandra.com/og-image-1.png"
         />
-        <link rel="preload" as="image" href="/couple-anim.gif" />
+        <link
+          rel="preload"
+          as="video"
+          href="/intro-couple.webm"
+          type="video/webm"
+        />
         <link rel="icon" href="/favicon.ico" />
       </NextHead>
 
@@ -343,46 +334,60 @@ export default function Home() {
           fontFamily: "'Mulish', sans-serif",
         }}
       >
-        {/* ==================== INTRO SPLASH ==================== */}
+        {/* ==================== INTRO ==================== */}
+        {/* Paused first frame + text + button; click plays the couple gif
+            once, then reveals the site (sparkles then loop behind the hero). */}
         <AnimatePresence>
           {introActive && (
-            <>
-              {/* Cream backdrop that fades away as the couple grows in */}
-              <motion.div
-                key="intro-backdrop"
-                aria-hidden="true"
-                initial={{ opacity: 1 }}
-                animate={{ opacity: introStage === "paused" ? 1 : 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.3, ease: "easeInOut" }}
+            <motion.div
+              key="intro"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
+              onClick={handleViewInvite}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 200,
+                background: "#f5f1e6",
+                overflow: "hidden",
+              }}
+            >
+              {/* Couple — poster (first frame) until clicked, then plays once */}
+              <video
+                ref={coupleVideoRef}
+                poster="/intro-couple-first.png"
+                muted
+                playsInline
+                preload="auto"
+                onEnded={() => setIntroStage("done")}
                 style={{
-                  position: "fixed",
+                  position: "absolute",
                   inset: 0,
-                  background: "#f5f1e6",
-                  zIndex: 100,
-                  pointerEvents: introStage === "paused" ? "auto" : "none",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  zIndex: 1,
+                  pointerEvents: "none",
                 }}
-              />
-              {/* Splash text + button */}
+              >
+                <source src="/intro-couple.webm" type="video/webm" />
+                <source src="/intro-couple.mp4" type="video/mp4" />
+              </video>
+              {/* Text + button — fade out once the couple starts playing */}
               <motion.div
-                key="intro-splash"
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: introStage === "paused" && illoReady ? 1 : 0,
-                }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.55, ease: "easeInOut" }}
+                animate={{ opacity: introStage === "paused" ? 1 : 0 }}
+                transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
                 style={{
-                  position: "fixed",
+                  position: "absolute",
                   left: 0,
                   right: 0,
-                  top: splashTextTop ?? undefined,
-                  bottom: splashTextTop == null ? "12vh" : undefined,
-                  zIndex: 120,
+                  bottom: "clamp(36px, 8vh, 84px)",
+                  zIndex: 2,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   gap: 18,
+                  top: "15%",
                   padding: "0 24px",
                   textAlign: "center",
                   pointerEvents: introStage === "paused" ? "auto" : "none",
@@ -413,32 +418,8 @@ export default function Home() {
                     Youssef &amp; Sandra
                   </p>
                 </div>
-                <motion.button
-                  onClick={handleViewInvite}
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 12,
-                    background: G,
-                    color: "#f5f1e6",
-                    border: "none",
-                    padding: "16px 40px",
-                    borderRadius: 999,
-                    fontSize: "0.78rem",
-                    letterSpacing: "0.2em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    boxShadow: "0 16px 34px -18px rgba(88,103,74,0.8)",
-                  }}
-                >
-                  View invitation
-                  <span style={{ fontSize: "1rem", lineHeight: 0 }}>→</span>
-                </motion.button>
               </motion.div>
-            </>
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -533,6 +514,7 @@ export default function Home() {
           style={{
             position: "relative",
             minHeight: "92vh",
+            marginTop: "20px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -542,133 +524,113 @@ export default function Home() {
             scrollMarginTop: "var(--scroll-offset)",
           }}
         >
-          <div
-            style={{ position: "relative", zIndex: 2, maxWidth: 760 }}
-            className="js-reveal"
-          >
-            <p
-              style={{
-                fontSize: "0.78rem",
-                letterSpacing: "0.34em",
-                textTransform: "uppercase",
-                color: "#8a9079",
-                margin: "0 0 4px",
-              }}
-            >
-              Together with their families
-            </p>
-          </div>
-
-          {/* Couple illustration — flies in from the intro splash.
-              unoptimized so the animation GIF plays and src swaps cleanly. */}
-          <Image
-            ref={illoRef}
-            src={illoSrc}
-            alt="Youssef and Sandra"
-            width={530}
-            height={600}
-            unoptimized
-            priority
-            draggable={false}
-            onLoad={() => {
-              if (introStage === "paused") recalcIntro();
-            }}
+          {/* Sparkles — loop behind the hero once the intro is done */}
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: introStage === "done" ? 1 : 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
             style={{
-              width: "min(340px, 74vw)",
+              position: "absolute",
+              inset: 0,
+              zIndex: 0,
+              pointerEvents: "none",
+            }}
+          >
+            <Image
+              src="/intro-sparkles.gif"
+              alt=""
+              fill
+              unoptimized
+              sizes="100vw"
+              style={{ objectFit: "cover" }}
+            />
+          </motion.div>
+
+          {/* Couple illustration above the names — intro's final frame */}
+          <Image
+            src="/intro-couple-last.png"
+            alt="Youssef and Sandra"
+            width={1217}
+            height={1822}
+            draggable={false}
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "84vw",
               height: "auto",
               display: "block",
-              margin: "10px auto 0",
-              position: introActive ? "relative" : "static",
-              zIndex: introActive ? 110 : "auto",
-              transformOrigin: "center center",
-              opacity: introStage === "paused" && !illoReady ? 0 : 1,
-              willChange: "transform",
+              // margin: "auto 0",
               pointerEvents: "none",
               userSelect: "none",
             }}
           />
-
-          {/* Names + details */}
-          <div
-            style={{ position: "relative", zIndex: 2, maxWidth: 760 }}
-            className="js-reveal"
+          <a
+            href="#rsvp"
+            style={{
+              position: "absolute",
+              bottom: "52px",
+              zIndex: 2,
+              display: "inline-block",
+              background: G,
+              color: "#f5f1e6",
+              textDecoration: "none",
+              padding: "11px 7px",
+              borderRadius: 999,
+              fontSize: "0.725rem",
+              textTransform: "uppercase",
+              fontWeight: 600,
+              width: "200px",
+            }}
           >
-            <h1
+            RSVP by August 15th
+          </a>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "45px",
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 14,
+            }}
+          >
+            {/* <button
+              onClick={handleAddToCalendar}
               style={{
-                fontFamily: "'Tangerine', cursive",
-                fontWeight: 400,
-                color: G,
-                fontSize: "clamp(4.2rem, 15vw, 9rem)",
-                lineHeight: 0.92,
-                margin: 0,
-              }}
-            >
-              Youssef{" "}
-              <span style={{ fontSize: "0.62em", color: "#a9b196" }}>
-                &amp;
-              </span>{" "}
-              Sandra
-            </h1>
-            <div
-              style={{
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
-                justifyContent: "center",
-                gap: 18,
-                margin: "22px 0 6px",
-                color: "#6c7261",
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(1.1rem, 2.6vw, 1.5rem)",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-              }}
-            >
-              <span
-                style={{
-                  height: 1,
-                  width: 44,
-                  background: "#bcc3aa",
-                  display: "block",
-                }}
-              />
-              Saturday · September 19, 2026
-              <span
-                style={{
-                  height: 1,
-                  width: 44,
-                  background: "#bcc3aa",
-                  display: "block",
-                }}
-              />
-            </div>
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontStyle: "italic",
-                fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
-                color: "#7d8270",
-                margin: "6px 0 28px",
-              }}
-            >
-              A celebration by the sea · Dayra Camp
-            </p>
-            <a
-              href="#rsvp"
-              style={{
-                display: "inline-block",
-                background: G,
-                color: "#f5f1e6",
-                textDecoration: "none",
-                padding: "17px 46px",
+                gap: 10,
+                background: "transparent",
+                color: G,
+                border: `1px solid ${G}`,
+                padding: "16px 34px",
                 borderRadius: 999,
                 fontSize: "0.8rem",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "'Mulish', sans-serif",
               }}
             >
-              RSVP by August 15th
-            </a>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={G}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4" />
+              </svg>
+              Add to calendar
+            </button> */}
           </div>
 
           <svg
