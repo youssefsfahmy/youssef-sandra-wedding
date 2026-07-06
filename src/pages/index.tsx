@@ -239,6 +239,7 @@ export default function Home() {
   };
 
   // Download an .ics the guest can add to Apple / Google / Outlook calendars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleAddToCalendar = () => {
     const ics = [
       "BEGIN:VCALENDAR",
@@ -364,7 +365,7 @@ export default function Home() {
                   position: "absolute",
                   inset: 0,
                   width: "100%",
-                  height: "100%",
+                  // height: "100%",
                   objectFit: "contain",
                   zIndex: 1,
                   pointerEvents: "none",
