@@ -316,12 +316,20 @@ export default function Home() {
           name="twitter:image"
           content="https://www.youssefxsandra.com/og-image-1.png"
         />
+        <link rel="preload" as="video" href="/main (1).mp4" type="video/webm" />
         <link
           rel="preload"
-          as="video"
-          href="/intro-couple.webm"
-          type="video/webm"
+          as="image"
+          href="/intro-couple-last.png"
+          type="image/png"
         />
+        <link
+          rel="preload"
+          as="image"
+          href="/intro-sparkles.gif"
+          type="image/gif"
+        />
+
         <link rel="icon" href="/favicon.ico" />
       </NextHead>
 
@@ -371,8 +379,7 @@ export default function Home() {
                   pointerEvents: "none",
                 }}
               >
-                <source src="/intro-couple.webm" type="video/webm" />
-                <source src="/intro-couple.mp4" type="video/mp4" />
+                <source src="/main (1).mp4" type="video/mp4" />
               </video>
               {/* Text + button — fade out once the couple starts playing */}
               <motion.div
@@ -552,6 +559,7 @@ export default function Home() {
           <Image
             src="/intro-couple-last.png"
             alt="Youssef and Sandra"
+            loading="eager"
             width={1217}
             height={1822}
             draggable={false}
