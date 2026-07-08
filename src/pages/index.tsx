@@ -379,7 +379,7 @@ export default function Home() {
                   pointerEvents: "none",
                 }}
               >
-                <source src="/main (1).mp4" type="video/mp4" />
+                <source src="/intro-couple.mp4" type="video/mp4" />
               </video>
               {/* Text + button — fade out once the couple starts playing */}
               <motion.div
