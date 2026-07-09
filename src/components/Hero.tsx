@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
+import { scrollToSection } from "@/utils/scroll";
 
 const G = "#58674a";
 
@@ -106,10 +107,15 @@ const Hero: React.FC = () => {
             >
               <source src="/intro-couple.mp4 " type="video/mp4" />
             </video>
-            {/* Text — fades out once the couple starts playing */}
+            {/* Prompt — shrinks away (scale + fade + blur) once tapped */}
             <motion.div
-              animate={{ opacity: introStage === "paused" ? 1 : 0 }}
-              transition={{ delay: 1, duration: 0.5, ease: "easeInOut" }}
+              initial={false}
+              animate={{
+                opacity: introStage === "paused" ? 1 : 0,
+                scale: introStage === "paused" ? 1 : 0.3,
+                filter: introStage === "paused" ? "blur(0px)" : "blur(6px)",
+              }}
+              transition={{ duration: 1, ease: [0.34, 1.4, 0.5, 1] }}
               style={{
                 position: "absolute",
                 left: 0,
@@ -121,6 +127,7 @@ const Hero: React.FC = () => {
                 alignItems: "center",
                 gap: 18,
                 top: "15%",
+                transformOrigin: "center",
                 padding: "0 24px",
                 textAlign: "center",
                 pointerEvents: introStage === "paused" ? "auto" : "none",
@@ -152,6 +159,67 @@ const Hero: React.FC = () => {
                 </p>
               </div>
             </motion.div>
+
+            {/* Real button placed over the poster's baked-in "View invitation"
+                pill — shrinks + fades away when tapped. */}
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: "15%",
+                zIndex: 3,
+                display: "flex",
+                justifyContent: "center",
+                pointerEvents: introStage === "paused" ? "auto" : "none",
+              }}
+            >
+              <motion.button
+                type="button"
+                onClick={handleViewInvite}
+                initial={false}
+                animate={{
+                  opacity: introStage === "paused" ? 1 : 0,
+                  scale: introStage === "paused" ? 1 : 0.3,
+                  // filter: introStage === "paused" ? "blur(0px)" : "blur(6px)",
+                }}
+                transition={{ duration: 1, ease: [0.34, 1.4, 0.5, 1] }}
+                whileTap={{ scale: 0.94 }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 12,
+                  width: "min(62%, 260px)",
+                  background: G,
+                  color: "#f5f1e6",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "18px 18px",
+                  borderRadius: 999,
+                  fontFamily: "'Mulish', sans-serif",
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                }}
+              >
+                View invitation
+                <svg
+                  width="26"
+                  height="10"
+                  viewBox="0 0 26 10"
+                  fill="none"
+                  stroke="#f5f1e6"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M0 5h24M20 1l4 4-4 4" />
+                </svg>
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -219,8 +287,9 @@ const Hero: React.FC = () => {
             userSelect: "none",
           }}
         />
-        <a
-          href="#rsvp"
+        <button
+          type="button"
+          onClick={() => scrollToSection("rsvp")}
           style={{
             position: "absolute",
             bottom: "52px",
@@ -228,17 +297,19 @@ const Hero: React.FC = () => {
             display: "inline-block",
             background: G,
             color: "#f5f1e6",
-            textDecoration: "none",
+            border: "none",
+            cursor: "pointer",
             padding: "11px 7px",
             borderRadius: 999,
             fontSize: "0.725rem",
             textTransform: "uppercase",
             fontWeight: 600,
             width: "200px",
+            fontFamily: "'Mulish', sans-serif",
           }}
         >
           RSVP by August 15th
-        </a>
+        </button>
 
         <svg
           viewBox="0 0 1200 130"

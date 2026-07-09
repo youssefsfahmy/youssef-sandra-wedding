@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { motion } from "motion/react";
 import { animate, inView } from "motion";
 import { searchParties, getParty } from "@/utils/firebase";
+import { scrollToSection } from "@/utils/scroll";
 import type { Party } from "@/types/rsvp";
 import Hero from "@/components/Hero";
 
@@ -12,6 +13,19 @@ const G = "#58674a";
 const TEAL = "#46606a";
 
 const EASE_OUT = [0.2, 0.7, 0.2, 1] as const;
+
+// Shared style for the header's text nav buttons (reset button chrome,
+// inherit the nav's typography so they render like the old links).
+const navLinkStyle: React.CSSProperties = {
+  color: "#6c7261",
+  background: "transparent",
+  border: "none",
+  padding: 0,
+  cursor: "pointer",
+  font: "inherit",
+  letterSpacing: "inherit",
+  textTransform: "inherit",
+};
 
 export default function Home() {
   const router = useRouter();
@@ -308,18 +322,22 @@ export default function Home() {
               gap: "10px 24px",
             }}
           >
-            <a
-              href="#top"
+            <button
+              type="button"
+              onClick={() => scrollToSection("top")}
               style={{
                 fontFamily: "'Tangerine', cursive",
                 fontSize: "1.9rem",
                 color: G,
-                textDecoration: "none",
                 lineHeight: 1,
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
               }}
             >
               Y &amp; S
-            </a>
+            </button>
             <nav
               className="site-nav"
               style={{
@@ -334,37 +352,45 @@ export default function Home() {
               }}
             >
               <span className="site-nav-links" style={{ display: "contents" }}>
-                <a
-                  href="#ceremony"
-                  style={{ color: "#6c7261", textDecoration: "none" }}
+                <button
+                  type="button"
+                  onClick={() => scrollToSection("ceremony")}
+                  style={navLinkStyle}
                 >
                   Ceremony
-                </a>
-                <a
-                  href="#reception"
-                  style={{ color: "#6c7261", textDecoration: "none" }}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollToSection("reception")}
+                  style={navLinkStyle}
                 >
                   Reception
-                </a>
-                <a
-                  href="#gifts"
-                  style={{ color: "#6c7261", textDecoration: "none" }}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollToSection("gifts")}
+                  style={navLinkStyle}
                 >
                   Gifts
-                </a>
+                </button>
               </span>
-              <a
-                href="#rsvp"
+              <button
+                type="button"
+                onClick={() => scrollToSection("rsvp")}
                 style={{
                   color: "#f5f1e6",
                   background: G,
-                  textDecoration: "none",
+                  border: "none",
+                  cursor: "pointer",
                   padding: "10px 20px",
                   borderRadius: 999,
+                  font: "inherit",
+                  letterSpacing: "inherit",
+                  textTransform: "inherit",
                 }}
               >
                 RSVP
-              </a>
+              </button>
             </nav>
           </div>
         </header>
