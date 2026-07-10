@@ -293,7 +293,7 @@ export default function Home() {
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "#f5f1e6",
+          background: "#f7f3ea",
           color: "#474b40",
           fontFamily: "'Mulish', sans-serif",
         }}
@@ -303,7 +303,7 @@ export default function Home() {
           style={{
             position: "sticky",
             top: 0,
-            zIndex: 50,
+            zIndex: 40,
             background: "rgba(245,241,230,0.88)",
             backdropFilter: "blur(10px)",
             borderBottom: "1px solid rgba(88,103,74,0.14)",

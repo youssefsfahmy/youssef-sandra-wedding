@@ -6,20 +6,117 @@ import React, {
   useCallback,
 } from "react";
 import Image from "next/image";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { scrollToSection } from "@/utils/scroll";
-import { getHeaderHeight } from "@/utils/headerHeight";
-import IntroOverlay from "./IntroOverlay";
 
 // useLayoutEffect on the client, useEffect on the server (avoids SSR warning)
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+const SHRINK_EASE = [0.34, 1.4, 0.5, 1] as const;
 
 type IntroStage = "paused" | "playing" | "done";
 
 /* ------------------------------------------------------------------ */
 /* Intro splash                                                        */
 /* ------------------------------------------------------------------ */
+
+interface IntroOverlayProps {
+  stage: IntroStage;
+  videoRef: React.RefObject<HTMLVideoElement>;
+  onEnter: () => void;
+  onFinished: () => void;
+}
+
+function IntroOverlay({
+  stage,
+  videoRef,
+  onEnter,
+  onFinished,
+}: IntroOverlayProps) {
+  const paused = stage === "paused";
+  const shrink = {
+    opacity: paused ? 1 : 0,
+    scale: paused ? 1 : 0.3,
+  };
+
+  return (
+    <AnimatePresence>
+      {stage !== "done" && (
+        <motion.div
+          key="intro"
+          onClick={onEnter}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+          className="fixed inset-0 z-[200] max-h-[190vw] min-h-[100vh] overflow-hidden bg-cream "
+        >
+          {/* Couple — poster (first frame) until tapped, then plays once */}
+
+          <video
+            ref={videoRef}
+            poster="/intro-couple-first.png"
+            muted
+            playsInline
+            preload="auto"
+            onEnded={onFinished}
+            className="pointer-events-none absolute inset-0 z-[1] mx-auto w-full object-contain"
+          >
+            <source src="/intro-couple.mp4" type="video/mp4" />
+          </video>
+
+          {/* Prompt — shrinks + fades + blurs away once tapped */}
+          <motion.div
+            initial={false}
+            animate={{ ...shrink, filter: paused ? "blur(0px)" : "blur(6px)" }}
+            transition={{ duration: 1, ease: SHRINK_EASE }}
+            className={`absolute inset-x-0 z-[2] flex  origin-center flex-col items-center gap-[4vw] px-[5.5vw] text-center ${
+              paused ? "pointer-events-auto" : "pointer-events-none"
+            }`}
+          >
+            <div className="mt-[30%]">
+              <p className="mb-[0.5vw] text-[0.72rem] uppercase tracking-[0.34em] text-sage-muted">
+                The wedding of
+              </p>
+              <p className="m-0 font-tangerine text-[clamp(2.6rem,9vw,3.8rem)] font-normal leading-none text-sage">
+                Youssef &amp; Sandra
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Real button over the poster's baked-in "View invitation" pill */}
+          <div
+            className={`absolute inset-x-0 top-[74.9%] z-[3] flex justify-center ${
+              paused ? "pointer-events-auto" : "pointer-events-none"
+            }`}
+          >
+            <motion.button
+              type="button"
+              onClick={onEnter}
+              initial={false}
+              animate={shrink}
+              transition={{ duration: 1, ease: SHRINK_EASE }}
+              whileTap={{ scale: 0.94 }}
+              className="inline-flex w-[62vw] cursor-pointer items-center justify-center gap-[3vw] rounded-full border-none bg-sage p-[4vw] font-mulish text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-cream"
+            >
+              View invitation
+              <svg
+                viewBox="0 0 26 10"
+                fill="none"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="h-[2.5vw] w-[6vw] stroke-cream"
+              >
+                <path d="M0 5h24M20 1l4 4-4 4" />
+              </svg>
+            </motion.button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /* Wave divider at the foot of the hero                                */
@@ -65,16 +162,8 @@ const Hero: React.FC = () => {
   // Paused: couple video's first frame (poster) + text. Tap plays the couple
   // video once, then reveals the site; the sparkles then loop behind the hero.
   const [introStage, setIntroStage] = useState<IntroStage>("paused");
-  const [headerHeight, setHeaderHeight] = useState(0);
   const coupleVideoRef = useRef<HTMLVideoElement>(null);
   const introRanRef = useRef(false);
-
-  useEffect(() => {
-    setHeaderHeight(getHeaderHeight());
-    const handleResize = () => setHeaderHeight(getHeaderHeight());
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // Deep links (e.g. /#rsvp) skip the intro so the browser can scroll straight
   // to the section.
@@ -125,10 +214,7 @@ const Hero: React.FC = () => {
         onFinished={() => setIntroStage("done")}
       />
 
-      <section
-        className="bg-[#f7f3ea] relative flex flex-col items-center justify-center text-center  max-w-[400px]  mx-auto"
-        style={{ marginTop: `-${headerHeight}px` }}
-      >
+      <section className="relative flex flex-col items-center justify-center text-center -mt-[100px] max-w-screen-sm mx-auto">
         {/* Sparkles — loop behind the hero once the intro is done */}
         <motion.div
           aria-hidden="true"
@@ -161,7 +247,7 @@ const Hero: React.FC = () => {
         <button
           type="button"
           onClick={() => scrollToSection("rsvp")}
-          className="absolute bottom-[10.1%] z-[2] inline-block w-[52%] cursor-pointer rounded-full border-none bg-sage px-[1.5%] py-[2.5%] font-mulish text-[3.5vw] xs:text-[14px] font-semibold uppercase text-cream"
+          className="absolute bottom-[10.1%] z-[2] inline-block w-[46vw] cursor-pointer rounded-full border-none bg-sage px-[1.5vw] py-[2.5vw] font-mulish text-[3.5vw] font-semibold uppercase text-cream"
         >
           RSVP by August 15th
         </button>

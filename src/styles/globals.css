@@ -9,12 +9,13 @@
   --sw: 2.6deg;
   --bmin: 0.5;
   --wd: 18px;
+  --header-height: 100px;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Mulish', Arial, sans-serif;
+  font-family: "Mulish", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -27,7 +28,10 @@ html {
   background: #cdd6bd;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: inherit;
 }
 
@@ -49,7 +53,9 @@ select:focus-visible {
   outline-offset: 3px;
 }
 
-[style*="Tangerine"] { font-weight: 700; }
+[style*="Tangerine"] {
+  font-weight: 700;
+}
 
 /* Header scrolls away with the page, so sections land flush at the very top */
 :root {
@@ -73,15 +79,5 @@ select:focus-visible {
   }
   .site-nav-links {
     display: contents !important;
-  }
-}
-
-/* Mobile: hero section — avoid large centering gap */
-@media (max-width: 600px) {
-  .hero-section {
-    min-height: auto !important;
-    justify-content: flex-start !important;
-    padding-top: 52px !important;
-    padding-bottom: 52px !important;
   }
 }

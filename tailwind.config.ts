@@ -8,6 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: "400px",
+      },
+      spacing: {
+        header: "var(--header-height)",
+      },
       colors: {
         background: "var(--background)",
         foreground: "#3c3e39",
@@ -60,10 +66,18 @@ const config: Config = {
           hover: "#A95538",
           subtle: "#E6B7A1",
         },
+
+        // Wedding palette (used across the hero / intro)
+        sage: "#58674a",
+        "sage-muted": "#8a9079",
+        cream: "#f7f3ea",
+        wave: "#84a9b2",
       },
 
       fontFamily: {
         montserrat: ["var(--font-montserrat)"],
+        tangerine: ["Tangerine", "cursive"],
+        mulish: ["Mulish", "sans-serif"],
       },
     },
   },
