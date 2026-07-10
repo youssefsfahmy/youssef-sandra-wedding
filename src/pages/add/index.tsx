@@ -16,6 +16,7 @@ interface PartyData {
   partyLabel?: string;
   members: MemberWithId[];
   searchIndex: string[];
+  allowPlusOne?: boolean;
 }
 
 interface FormState {
@@ -23,6 +24,7 @@ interface FormState {
   labelTemplate: string;
   partyLabel: string;
   members: Member[];
+  allowPlusOne: boolean;
 }
 
 const LABEL_TEMPLATES = ["Sandra's family", "Youssef's family", "Friends"];
@@ -52,6 +54,7 @@ const PartyCreator: React.FC = () => {
     labelTemplate: LABEL_TEMPLATES[0],
     partyLabel: "",
     members: [{ firstName: "", lastName: "" }],
+    allowPlusOne: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,6 +97,7 @@ const PartyCreator: React.FC = () => {
       labelTemplate: LABEL_TEMPLATES[0],
       partyLabel: "",
       members: [{ firstName: "", lastName: "" }],
+      allowPlusOne: false,
     });
     setMessage(null);
   };
@@ -127,6 +131,7 @@ const PartyCreator: React.FC = () => {
         ...(formState.partyLabel.trim() && { partyLabel: formState.partyLabel.trim() }),
         members: membersWithIds,
         searchIndex: buildSearchIndex(validMembers),
+        allowPlusOne: formState.allowPlusOne,
       };
 
       await setDoc(doc(db, "parties", formState.partyId), partyData, { merge: true });
@@ -206,6 +211,28 @@ const PartyCreator: React.FC = () => {
                 placeholder="e.g., The Fahmy Family"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
+            </div>
+
+            {/* Allow plus one */}
+            <div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formState.allowPlusOne}
+                  onChange={(e) =>
+                    updateFormState({ allowPlusOne: e.target.checked })
+                  }
+                  className="mt-1 h-4 w-4"
+                />
+                <span>
+                  <span className="block text-sm font-medium text-gray-700">
+                    Allow a plus one
+                  </span>
+                  <span className="block text-xs text-gray-400">
+                    Lets this party add one extra guest when they RSVP.
+                  </span>
+                </span>
+              </label>
             </div>
 
             {/* Members */}

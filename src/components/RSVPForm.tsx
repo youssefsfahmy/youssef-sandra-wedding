@@ -19,6 +19,8 @@ const STEPS: StepInfo[] = [
   { id: 2, label: "Confirmation", isActive: false, isCompleted: false },
 ];
 
+const PLUS_ONE_ID = "plus-one";
+
 const RSVPForm: React.FC = () => {
   const router = useRouter();
   const [formState, setFormState] = useState<FormState>({ rsvpsByGuest: {} });
@@ -63,11 +65,51 @@ const RSVPForm: React.FC = () => {
     });
   }, [router.isReady, router.query]);
 
+  const plusOne = formState.rsvpsByGuest[PLUS_ONE_ID];
+
   const isStep1Valid = formState.party
     ? formState.party.members.every(
         (m) => formState.rsvpsByGuest[m.id]?.rsvp !== undefined
-      )
+      ) && (!plusOne || plusOne.firstName.trim().length > 0)
     : false;
+
+  const handleAddPlusOne = () => {
+    setFormState((prev) => ({
+      ...prev,
+      rsvpsByGuest: {
+        ...prev.rsvpsByGuest,
+        [PLUS_ONE_ID]: {
+          guestId: PLUS_ONE_ID,
+          firstName: "",
+          lastName: "",
+          rsvp: "yes",
+          isPlusOne: true,
+        },
+      },
+    }));
+  };
+
+  const handleRemovePlusOne = () => {
+    setFormState((prev) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [PLUS_ONE_ID]: _removed, ...rest } = prev.rsvpsByGuest;
+      return { ...prev, rsvpsByGuest: rest };
+    });
+  };
+
+  const handlePlusOneNameChange = (name: string) => {
+    setFormState((prev) => {
+      const current = prev.rsvpsByGuest[PLUS_ONE_ID];
+      if (!current) return prev;
+      return {
+        ...prev,
+        rsvpsByGuest: {
+          ...prev.rsvpsByGuest,
+          [PLUS_ONE_ID]: { ...current, firstName: name },
+        },
+      };
+    });
+  };
 
   const getCurrentSteps = (): StepInfo[] =>
     STEPS.map((step) => ({
@@ -120,6 +162,10 @@ const RSVPForm: React.FC = () => {
 
   const sendWhatsappNotification = async (state: FormState, confirmationCode: string) => {
     const names = state.party?.members.map((m) => `${m.firstName} ${m.lastName}`);
+    const plusOneGuest = state.rsvpsByGuest[PLUS_ONE_ID];
+    if (names && plusOneGuest?.firstName.trim()) {
+      names.push(`${plusOneGuest.firstName} (+1)`);
+    }
     const link = "https://youssefxsandra.com/rsvp/" + confirmationCode;
     const encodedText = encodeURIComponent(
       names ? "New Submission from " + names.join(", ") + "\n" + link : "New submission " + link
@@ -199,6 +245,11 @@ const RSVPForm: React.FC = () => {
                     onRSVPChange={handleRSVPChange}
                     transport={formState.transport}
                     onTransportChange={handleTransportChange}
+                    allowPlusOne={!!formState.party.allowPlusOne}
+                    plusOne={plusOne}
+                    onAddPlusOne={handleAddPlusOne}
+                    onRemovePlusOne={handleRemovePlusOne}
+                    onPlusOneNameChange={handlePlusOneNameChange}
                   />
                 </motion.div>
               )}

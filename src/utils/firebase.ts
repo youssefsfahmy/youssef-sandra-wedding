@@ -52,6 +52,7 @@ export async function getParty(partyId: string): Promise<Party | null> {
       confirmationCode: data.confirmationCode,
       createdAt: data.createdAt,
       guests: data.guests,
+      allowPlusOne: data.allowPlusOne,
     };
   } catch (error) {
     console.error("Error fetching party:", error);
@@ -80,6 +81,7 @@ export async function getPartyByConfirmationCode(
           guests: data.guests,
           message: data.message,
           transport: data.transport,
+          allowPlusOne: data.allowPlusOne,
         };
       }
     }

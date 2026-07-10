@@ -434,6 +434,11 @@ const ViewPage: React.FC = () => {
                                 <span className="font-medium text-gray-900">
                                   {guest.firstName} {guest.lastName}
                                 </span>
+                                {guest.isPlusOne && (
+                                  <span className="text-xs font-medium text-emerald-700 bg-emerald-100 rounded-full px-2 py-0.5 ml-2">
+                                    +1
+                                  </span>
+                                )}
                                 {guest.email && (
                                   <span className="text-sm text-gray-500 ml-2">({guest.email})</span>
                                 )}

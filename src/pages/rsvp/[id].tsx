@@ -124,7 +124,12 @@ const SubmissionViewPage: React.FC = () => {
               <div style={{ marginBottom: notAttending.length > 0 ? 10 : 0 }}>
                 <p style={{ fontSize: "0.7rem", letterSpacing: "0.18em", textTransform: "uppercase", color: G, margin: "0 0 5px" }}>Attending</p>
                 {attending.map((g, i) => (
-                  <p key={i} style={{ margin: "2px 0", fontSize: "0.95rem", color: "#474b40" }}>{g.firstName} {g.lastName}</p>
+                  <p key={i} style={{ margin: "2px 0", fontSize: "0.95rem", color: "#474b40" }}>
+                    {g.firstName} {g.lastName}
+                    {g.isPlusOne && (
+                      <span style={{ color: "#8a9079", fontSize: "0.8rem" }}> (plus one)</span>
+                    )}
+                  </p>
                 ))}
               </div>
             )}

@@ -19,6 +19,7 @@ export type Party = {
   message?: string;
   transport?: boolean;
   invitationSent?: boolean;
+  allowPlusOne?: boolean;
 };
 
 export type GuestRSVP = {
@@ -27,6 +28,7 @@ export type GuestRSVP = {
   lastName: string;
   email?: string;
   rsvp?: YesNo;
+  isPlusOne?: boolean;
 };
 
 export type FormState = {
