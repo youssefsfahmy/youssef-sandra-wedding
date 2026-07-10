@@ -79,9 +79,12 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({
   return (
     <div
       className="relative w-full bg-[#f7f3ea] z-50"
-      style={{ marginTop: `-${headerHeight + 50}px` }}
+      style={{
+        marginTop: `-${headerHeight + 50}px`,
+        paddingBottom: `${headerHeight + 50}px`,
+      }}
     >
-      <div className="relative  max-w-[400px] mx-auto " onClick={onEnter}>
+      <div className="relative  max-w-[400px] mx-auto" onClick={onEnter}>
         <video
           ref={videoRef}
           poster="/intro-couple-first.png"
