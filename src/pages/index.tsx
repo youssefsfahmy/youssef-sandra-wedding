@@ -8,6 +8,7 @@ import { searchParties, getParty } from "@/utils/firebase";
 import { scrollToSection } from "@/utils/scroll";
 import type { Party } from "@/types/rsvp";
 import Hero from "@/components/Hero";
+import AddToCalendarButton from "@/components/AddToCalendar";
 
 const G = "#58674a";
 const TEAL = "#46606a";
@@ -484,18 +485,17 @@ export default function Home() {
                   maxWidth: "38ch",
                 }}
               >
-                We will exchange our vows at{" "}
+                Join us as we are united in marriage at{" "}
                 <strong style={{ fontWeight: 600, color: G }}>
                   Saint Mary &amp; Saint Athanasius Church
-                </strong>{" "}
-                before making our way to the shore.
+                </strong>
+                , before making our way to the shore.
               </p>
               <div
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
                   gap: "14px 40px",
-                  marginBottom: 28,
                 }}
               >
                 <div>
@@ -518,7 +518,7 @@ export default function Home() {
                       color: G,
                     }}
                   >
-                    12:30 in the afternoon
+                    12:00 in the afternoon
                   </p>
                 </div>
                 <div>
@@ -564,21 +564,21 @@ export default function Home() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path data-draw="" d="M100,12 L100,42 M86,26 L114,26" />
+                <path data-draw="" d="M110,12 L110,42 M96,26 L124,26" />
                 <path
                   data-draw=""
                   data-delay="0.2"
-                  d="M44,188 L44,96 C44,46 100,42 100,42 C100,42 156,46 156,96 L156,188"
+                  d="M54,188 L54,96 C54,46 110,42 110,42 C110,42 166,46 166,96 L166,188"
                 />
                 <path
                   data-draw=""
                   data-delay="0.5"
-                  d="M84,188 L84,118 C84,92 116,92 116,118 L116,188"
+                  d="M94,188 L94,118 C94,92 126,92 126,118 L126,188"
                 />
                 <path
                   data-draw=""
                   data-delay="0.6"
-                  d="M100,118 L100,158 M88,138 L112,138"
+                  d="M110,118 L110,158 M98,138 L122,138"
                 />
                 <path data-draw="" data-delay="0.7" d="M26,188 L194,188" />
               </svg>
@@ -603,6 +603,7 @@ export default function Home() {
               >
                 View ceremony map
               </a>
+              <AddToCalendarButton />
             </div>
           </div>
         </section>
@@ -1530,7 +1531,7 @@ export default function Home() {
                 color: "#bcc6ab",
               }}
             >
-              Dayra Camp · September 19th · 12:30 PM
+              Dayra Camp · September 19th · 12:00 PM
             </p>
           </footer>
         </section>
