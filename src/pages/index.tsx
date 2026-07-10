@@ -275,7 +275,7 @@ export default function Home() {
         <link
           rel="preload"
           as="image"
-          href="/intro-couple-last.png"
+          href="/intro-couple-last-awi.png"
           type="image/png"
         />
         <link

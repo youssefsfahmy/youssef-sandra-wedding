@@ -235,7 +235,7 @@ const Hero: React.FC = () => {
 
         {/* Couple illustration — intro's final frame */}
         <Image
-          src="/intro-couple-last.png"
+          src="/intro-couple-last-awi.png"
           alt="Youssef and Sandra"
           loading="eager"
           height={1206}

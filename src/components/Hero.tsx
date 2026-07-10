@@ -28,30 +28,30 @@ type IntroStage = "paused" | "playing" | "done";
 function WaveDivider() {
   return (
     <svg
-      viewBox="0 0 1200 130"
+      viewBox="0 0 2400 130"
       preserveAspectRatio="none"
       data-float="wave"
       data-draw-margin="0px 0px -30% 0px"
       fill="none"
       strokeWidth="1.6"
       strokeLinecap="round"
-      className="absolute bottom-0 left-[-3vw] z-[1] h-[30vw] w-[106vw] stroke-wave"
+      className="absolute bottom-0 left-[-50vw] z-[1] h-[30vw] w-[200vw] sm:w-[120vw] xs:left-[-37vw] xs:bottom-0 xs:h-64 stroke-wave"
     >
       <path
         data-draw=""
-        d="M0,74 C150,44 300,104 450,74 C600,44 750,104 900,74 C1050,44 1150,94 1200,74"
+        d="M0,74 C160,44 320,104 480,74 C640,44 800,104 960,74 C1120,44 1280,104 1440,74 C1600,44 1760,104 1920,74 C2080,44 2240,104 2400,74"
       />
       <path
         data-draw=""
         data-delay="0.2"
         className="opacity-70"
-        d="M0,96 C160,70 320,120 480,96 C640,72 800,118 960,96 C1080,78 1150,108 1200,96"
+        d="M0,96 C160,70 320,120 480,96 C640,70 800,120 960,96 C1120,70 1280,120 1440,96 C1600,70 1760,120 1920,96 C2080,70 2240,120 2400,96"
       />
       <path
         data-draw=""
         data-delay="0.4"
         className="opacity-[0.45]"
-        d="M0,116 C180,96 360,134 540,116 C720,98 900,134 1080,116 C1140,110 1170,120 1200,116"
+        d="M0,116 C160,96 320,134 480,116 C640,96 800,134 960,116 C1120,96 1280,134 1440,116 C1600,96 1760,134 1920,116 C2080,96 2240,134 2400,116"
       />
     </svg>
   );
@@ -127,7 +127,7 @@ const Hero: React.FC = () => {
 
       <section
         className="bg-[#f7f3ea] relative flex flex-col items-center justify-center text-center  max-w-[400px]  mx-auto"
-        style={{ marginTop: `-${headerHeight}px` }}
+        style={{ marginTop: `-${headerHeight + 50}px` }}
       >
         {/* Sparkles — loop behind the hero once the intro is done */}
         <motion.div
@@ -146,10 +146,9 @@ const Hero: React.FC = () => {
             className="mx-auto max-w-[93vw] object-cover"
           />
         </motion.div>
-
         {/* Couple illustration — intro's final frame */}
         <Image
-          src="/intro-couple-last.png"
+          src="/intro-couple-last-awi.png"
           alt="Youssef and Sandra"
           loading="eager"
           height={1206}
@@ -164,8 +163,7 @@ const Hero: React.FC = () => {
           className="absolute bottom-[10.1%] z-[2] inline-block w-[52%] cursor-pointer rounded-full border-none bg-sage px-[1.5%] py-[2.5%] font-mulish text-[3.5vw] xs:text-[14px] font-semibold uppercase text-cream"
         >
           RSVP by August 15th
-        </button>
-
+        </button>{" "}
         <WaveDivider />
       </section>
     </>

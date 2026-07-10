@@ -63,7 +63,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({
   onEnter,
   onFinished,
 }) => {
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(100);
 
   useEffect(() => {
     setHeaderHeight(getHeaderHeight());
@@ -79,7 +79,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({
   return (
     <div
       className="relative w-full bg-[#f7f3ea] z-50"
-      style={{ marginTop: `-${headerHeight}px` }}
+      style={{ marginTop: `-${headerHeight + 50}px` }}
     >
       <div className="relative  max-w-[400px] mx-auto " onClick={onEnter}>
         <video
