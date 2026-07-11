@@ -477,12 +477,45 @@ export default function Home() {
                   color: G,
                   fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
                   lineHeight: 1.32,
-                  paddingBottom: "1.05em",
+                  paddingBottom: "0em",
                   margin: "0 0 16px",
                 }}
               >
                 Where it begins
-              </h2>
+              </h2>{" "}
+              <blockquote
+                style={{
+                  borderLeft: `2px solid ${G}`,
+                  paddingLeft: 18,
+                  margin: "0 0 26px",
+                  maxWidth: "38ch",
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontStyle: "italic",
+                    fontSize: "1.2rem",
+                    color: "#5b6051",
+                    lineHeight: 1.55,
+                    margin: "0 0 8px",
+                  }}
+                >
+                  &ldquo;But above all these things put on love, which is the
+                  bond of perfection.&rdquo;
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "#8a9079",
+                  }}
+                >
+                  Colossians 3:14
+                </p>
+              </blockquote>
               <p
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
