@@ -37,6 +37,14 @@ export default function Home() {
   const [searchError, setSearchError] = useState("");
   const [preloadedParty, setPreloadedParty] = useState<Party | null>(null);
 
+  // Scroll to top on refresh/mount (disable browser scroll restoration)
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
   // Animations — powered by Framer Motion (GPU-composited, WAAPI-backed)
   useEffect(() => {
     const cleanups: Array<() => void> = [];
@@ -730,8 +738,8 @@ export default function Home() {
                     color: "#5b6051",
                   }}
                 >
-                  Elegant dresses or formal separates. Think florals, flowing
-                  silhouettes, and soft colours that belong by the sea.
+                  Elegant seaside formal: flowy dresses in soft colours, light
+                  and graceful by the sea.
                 </p>
               </div>
             </div>
@@ -907,7 +915,7 @@ export default function Home() {
                 }}
               >
                 <Image
-                  src="/dayra-1.png"
+                  src="/dayra-4.jpg"
                   alt="Dayra Camp"
                   fill
                   sizes="(max-width: 900px) 100vw, 450px"
@@ -950,7 +958,7 @@ export default function Home() {
                 }}
               >
                 From the ceremony it is about a{" "}
-                <strong style={{ color: TEAL }}>90-minute drive</strong> along
+                <strong style={{ color: TEAL }}>90-minute drive </strong> along
                 the coast. We&apos;re arranging a bus for those who&apos;d like
                 to ride together — just let us know when you RSVP.
               </p>
@@ -1409,7 +1417,7 @@ export default function Home() {
               give something more, we&apos;ve gathered a few ideas in one place.
             </p>
             <a
-              href="https://www.zola.com/registry/youssefandsandra"
+              href="https://giftful.com/wishlists/EmrlMJ9HBcwzqS4Ikzdd"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -1462,19 +1470,19 @@ export default function Home() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <circle data-draw="" cx="84" cy="86" r="40" />
-              <circle data-draw="" data-delay="0.35" cx="138" cy="86" r="40" />
+              <circle data-draw="" cx="80" cy="90" r="32" />
+              <circle data-draw="" data-delay="0.35" cx="140" cy="90" r="32" />
               <path
                 data-draw=""
                 data-delay="0.7"
-                transform="translate(96,18) rotate(-30)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
+                transform="translate(72,50) rotate(-30)"
+                d="M0,0 L6,-8 L12,0 L6,6 Z"
               />
               <path
                 data-draw=""
                 data-delay="0.8"
-                transform="translate(126,18) rotate(30) scale(-1,1)"
-                d="M0,0 C7,-6 18,-3 22,7 C12,10 3,8 0,0 Z"
+                transform="translate(132,50) rotate(-30)"
+                d="M0,0 L6,-8 L12,0 L6,6 Z"
               />
             </svg>
             <h2

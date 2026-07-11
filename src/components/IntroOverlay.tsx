@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { getHeaderHeight } from "@/utils/headerHeight";
 const SHRINK_EASE = [0.34, 1.4, 0.5, 1] as const;
 
@@ -72,47 +72,52 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (stage === "done") {
-    return null;
-  }
-
   return (
-    <div
-      className="relative w-full bg-[#f7f3ea] z-50"
-      style={{
-        marginTop: `-${headerHeight + 50}px`,
-        paddingBottom: `${headerHeight + 50}px`,
-      }}
-    >
-      <div className="relative  max-w-[400px] mx-auto" onClick={onEnter}>
-        <video
-          ref={videoRef}
-          poster="/intro-couple-first.png"
-          muted
-          playsInline
-          preload="auto"
-          onEnded={onFinished}
-          className=""
+    <AnimatePresence>
+      {stage !== "done" && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className=" w-full bg-[#f7f3ea] z-50"
+          style={{
+            marginTop: `-${headerHeight + 50}px`,
+            paddingBottom: `50vh`,
+            position: "absolute",
+          }}
         >
-          <source src="/intro-couple.mp4" type="video/mp4" />
-        </video>
+          <div className="relative  max-w-[400px] mx-auto" onClick={onEnter}>
+            <video
+              ref={videoRef}
+              poster="/intro-couple-first.png"
+              muted
+              playsInline
+              preload="auto"
+              onEnded={onFinished}
+              className=""
+            >
+              <source src="/intro-couple.mp4" type="video/mp4" />
+            </video>
 
-        <WelcomeText
-          paused={stage === "paused"}
-          shrink={{
-            opacity: stage === "paused" ? 1 : 0,
-            scale: stage === "paused" ? 1 : 0.3,
-          }}
-        />
-        <WelcomeButton
-          paused={stage === "paused"}
-          shrink={{
-            opacity: stage === "paused" ? 1 : 0,
-            scale: stage === "paused" ? 1 : 0.3,
-          }}
-        />
-      </div>
-    </div>
+            <WelcomeText
+              paused={stage === "paused"}
+              shrink={{
+                opacity: stage === "paused" ? 1 : 0,
+                scale: stage === "paused" ? 1 : 0.3,
+              }}
+            />
+            <WelcomeButton
+              paused={stage === "paused"}
+              shrink={{
+                opacity: stage === "paused" ? 1 : 0,
+                scale: stage === "paused" ? 1 : 0.3,
+              }}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

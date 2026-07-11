@@ -133,7 +133,7 @@ const Hero: React.FC = () => {
         <motion.div
           aria-hidden="true"
           initial={{ opacity: 0 }}
-          animate={{ opacity: introStage === "done" ? 1 : 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
           className="pointer-events-none absolute inset-0 z-0"
         >
