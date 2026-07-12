@@ -9,7 +9,7 @@ type Data = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data>,
 ) {
   // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -37,11 +37,11 @@ export default async function handler(
     }
 
     await fetch(
-      `https://api.callmebot.com/whatsapp.php?phone=201287666534&text=${text}&apikey=8877258`
+      `https://api.callmebot.com/whatsapp.php?phone=201287666534&text=${text}&apikey=8877258`,
     );
 
-    https: await fetch(
-      `https://api.callmebot.com/whatsapp.php?phone=201224002612&text=${text}&apikey=7135209`
+    await fetch(
+      `https://api.callmebot.com/whatsapp.php?phone=201224002612&text=${text}&apikey=7135209`,
     );
 
     res.status(200).json({

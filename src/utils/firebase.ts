@@ -1,4 +1,12 @@
-import { collection, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteField,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Party, GuestRSVP } from "@/types/rsvp";
 
@@ -61,7 +69,7 @@ export async function getParty(partyId: string): Promise<Party | null> {
 }
 
 export async function getPartyByConfirmationCode(
-  confirmationCode: string
+  confirmationCode: string,
 ): Promise<Party | null> {
   try {
     const partiesRef = collection(db, "parties");
@@ -102,7 +110,7 @@ export async function submitRSVP(
   partyLabel: string | undefined,
   rsvpsByGuest: Record<string, GuestRSVP>,
   message: string = "",
-  transport?: boolean
+  transport?: boolean,
 ): Promise<string> {
   const confirmationCode = generateConfirmationCode();
   const createdAt = Date.now();
@@ -120,8 +128,19 @@ export async function submitRSVP(
       message,
       ...(transport !== undefined && { transport }),
     },
-    { merge: true }
+    { merge: true },
   );
 
   return confirmationCode;
+}
+
+export async function resetRSVP(partyId: string): Promise<void> {
+  const partyRef = doc(db, "parties", partyId);
+  await updateDoc(partyRef, {
+    confirmationCode: deleteField(),
+    guests: deleteField(),
+    message: deleteField(),
+    transport: deleteField(),
+    createdAt: deleteField(),
+  });
 }
