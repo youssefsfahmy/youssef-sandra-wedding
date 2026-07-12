@@ -882,7 +882,7 @@ export default function Home() {
                 { time: "3:30", label: "Welcome drinks & appetizers" },
                 { time: "5:00", label: "First dance" },
                 { time: "6:00", label: "Dancing into the night" },
-                { time: "11:00", label: "Say goodnight" },
+                { time: "11:30", label: "Say goodnight" },
               ].map(({ time, label }) => (
                 <div
                   key={time}
