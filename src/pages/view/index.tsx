@@ -469,14 +469,27 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                               )}
 
                               <div className="mt-3 pt-2 border-t border-gray-100 space-y-2">
-                                <button
-                                  onClick={() => copyPartyLink(party)}
-                                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 rounded-lg transition-colors"
-                                >
-                                  {copiedPartyId === party.id
-                                    ? "✓ Link Copied!"
-                                    : "Copy RSVP Link"}
-                                </button>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => copyPartyLink(party)}
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 rounded-lg transition-colors"
+                                  >
+                                    {copiedPartyId === party.id
+                                      ? "✓ Copied!"
+                                      : "📤 Send Invitation"}
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      window.open(
+                                        `https://youssefxsandra.com?partyId=${party.id}`,
+                                        "_blank",
+                                      )
+                                    }
+                                    className="flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 rounded-lg transition-colors"
+                                  >
+                                    🔗
+                                  </button>
+                                </div>
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => toggleInvitationSent(party)}
