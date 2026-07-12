@@ -89,7 +89,6 @@ const RSVPForm: React.FC = () => {
           party,
           rsvpsByGuest,
           transport: party.transport,
-          message: party.message || "",
         });
         setIsLoadingParty(false);
       })
@@ -335,10 +334,7 @@ const RSVPForm: React.FC = () => {
                   party={formState.party}
                   guests={formState.party.members}
                   rsvpsByGuest={formState.rsvpsByGuest}
-                  confirmationCode={
-                    formState.confirmationCode ||
-                    formState.party.confirmationCode
-                  }
+                  confirmationCode={formState.confirmationCode}
                   isSubmitted={!!formState.confirmationCode}
                   onSubmit={handleSubmit}
                   isSubmitting={isSubmitting}

@@ -287,6 +287,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
           <textarea
             placeholder="Wishes, a memory, anything — entirely optional"
             rows={3}
+            value={party.message || ""}
             onChange={(e) => handleMessageChange(e.target.value)}
             style={{
               width: "100%",

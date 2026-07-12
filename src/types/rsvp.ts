@@ -36,5 +36,4 @@ export type FormState = {
   rsvpsByGuest: Record<string, GuestRSVP>;
   confirmationCode?: string;
   transport?: boolean;
-  message?: string;
 };
