@@ -60,6 +60,8 @@ export async function getParty(partyId: string): Promise<Party | null> {
       confirmationCode: data.confirmationCode,
       createdAt: data.createdAt,
       guests: data.guests,
+      message: data.message,
+      transport: data.transport,
       allowPlusOne: data.allowPlusOne,
     };
   } catch (error) {
