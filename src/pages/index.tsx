@@ -477,12 +477,12 @@ export default function Home() {
                   color: G,
                   fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
                   lineHeight: 1.32,
-                  paddingBottom: "0em",
+                  paddingBottom: "0.66em",
                   margin: "0 0 16px",
                 }}
               >
                 Where it begins
-              </h2>{" "}
+              </h2>
               <blockquote
                 style={{
                   borderLeft: `2px solid ${G}`,
@@ -624,7 +624,7 @@ export default function Home() {
                 <path data-draw="" data-delay="0.7" d="M26,188 L194,188" />
               </svg>
               <a
-                href="https://maps.google.com/?q=Saint+Mary+and+Saint+Athanasius+Church"
+                href="https://maps.app.goo.gl/6woycMKqk1pQKuCx8"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -831,8 +831,7 @@ export default function Home() {
                 margin: "0 auto 8px",
               }}
             >
-              Long tables overlooking the sea, with the water in front of us and
-              the evening unfolding slowly into the night.
+              Long tables by the sea, celebrating into the night.
             </p>
 
             <svg
@@ -963,7 +962,7 @@ export default function Home() {
                   letterSpacing: "0.3em",
                   textTransform: "uppercase",
                   color: "#7c9097",
-                  margin: "0 0 14px",
+                  margin: "0 0 10px",
                 }}
               >
                 The Venue
@@ -976,7 +975,7 @@ export default function Home() {
                   fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
                   lineHeight: 1.32,
                   paddingBottom: "0.66em",
-                  margin: "0 0 22px",
+                  margin: "0 0 16px",
                 }}
               >
                 Dayra Camp
@@ -996,7 +995,7 @@ export default function Home() {
                 to ride together — just let us know when you RSVP.
               </p>
               <a
-                href="https://maps.google.com/?q=Dayra+Camp"
+                href="https://maps.app.goo.gl/oDrmBMTqqEdjBbreA"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1079,7 +1078,7 @@ export default function Home() {
                 fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
                 lineHeight: 1.32,
                 paddingBottom: "0.66em",
-                margin: "0 0 12px",
+                margin: "0 0 16px",
               }}
             >
               RSVP
@@ -1127,7 +1126,10 @@ export default function Home() {
                       lineHeight: 1.2,
                     }}
                   >
-                    {preloadedParty.members.map((m) => m.firstName).join(" & ")}
+                    {preloadedParty.members
+                      .map((m) => m.firstName)
+                      .join(", ")
+                      .replace(/, ([^,]*)$/, " & $1")}
                   </p>
                   {preloadedParty.partyLabel && (
                     <p
@@ -1431,7 +1433,7 @@ export default function Home() {
                 fontSize: "clamp(2.8rem, 7vw, 4.4rem)",
                 lineHeight: 1.32,
                 paddingBottom: "0.66em",
-                margin: "0 0 18px",
+                margin: "0 0 16px",
               }}
             >
               Gifts
@@ -1446,8 +1448,8 @@ export default function Home() {
                 margin: "0 auto 30px",
               }}
             >
-              Your presence by the sea is the truest gift. If you&apos;d like to
-              give something more, we&apos;ve gathered a few ideas in one place.
+              Your presence is the truest gift. If you&apos;d like to give
+              something more, we&apos;ve gathered a few ideas in one place.
             </p>
             <a
               href="https://giftful.com/wishlists/EmrlMJ9HBcwzqS4Ikzdd"
@@ -1551,9 +1553,13 @@ export default function Home() {
                 fontSize: "2.4rem",
                 margin: "34px 0 0",
                 color: "#fbfaf3",
+                textAlign: "right",
+                maxWidth: "42ch",
+                marginLeft: "auto",
+                marginRight: "auto",
               }}
             >
-              Youssef &amp; Sandra
+              - Youssef &amp; Sandra
             </p>
           </div>
           <footer
