@@ -173,7 +173,9 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
     const attending = allGuests.filter((g) => g.rsvp === "yes").length;
     const notAttending = allGuests.filter((g) => g.rsvp === "no").length;
 
-    const needsCoach = submitted.filter((p) => p.transport === true).length;
+    const needsCoach = submitted
+      .filter((p) => p.transport === true)
+      .reduce((total, p) => total + (p.guests?.length || 0), 0);
     const invitationsSent = parties.filter((p) => p.invitationSent).length;
 
     return {
