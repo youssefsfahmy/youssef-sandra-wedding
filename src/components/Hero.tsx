@@ -162,7 +162,7 @@ const Hero: React.FC = () => {
           onClick={() => scrollToSection("rsvp")}
           className="absolute bottom-[10.1%] z-[2] inline-block w-[52%] cursor-pointer rounded-full border-none bg-sage px-[1.5%] py-[2.5%] font-mulish text-[3.5vw] xs:text-[14px] font-semibold uppercase text-cream"
         >
-          RSVP by August 15th
+          RSVP by August 30th
         </button>{" "}
         <WaveDivider />
       </section>

@@ -1092,7 +1092,7 @@ export default function Home() {
                 margin: "0 0 38px",
               }}
             >
-              Kindly reply by the 15th of August.
+              Kindly reply by the 30th of August.
             </p>
 
             {preloadedParty ? (
