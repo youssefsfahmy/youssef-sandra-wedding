@@ -20,6 +20,7 @@ export type Party = {
   transport?: boolean;
   invitationSent?: boolean;
   allowPlusOne?: boolean;
+  probablyNotComing?: boolean;
 };
 
 export type GuestRSVP = {

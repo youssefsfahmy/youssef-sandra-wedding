@@ -30,6 +30,9 @@ const ViewPage: React.FC = () => {
   const [invitationFilter, setInvitationFilter] = useState<
     "all" | "sent" | "not-sent"
   >("all");
+  const [notComingFilter, setNotComingFilter] = useState<
+    "all" | "probably-not-coming"
+  >("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -104,6 +107,7 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
             : undefined,
           transport: d.transport,
           invitationSent: !!d.invitationSent,
+          probablyNotComing: !!d.probablyNotComing,
         };
       });
       setParties(data);
@@ -125,6 +129,28 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
       setParties((prev) =>
         prev.map((p) =>
           p.id === party.id ? { ...p, invitationSent: next } : p,
+        ),
+      );
+    } catch (err) {
+      setError(
+        `Failed to update party: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const toggleProbablyNotComing = async (party: PartyWithSubmission) => {
+    const next = !party.probablyNotComing;
+    setUpdatingId(party.id);
+    setError(null);
+    try {
+      await updateDoc(doc(db, "parties", party.id), {
+        probablyNotComing: next,
+      });
+      setParties((prev) =>
+        prev.map((p) =>
+          p.id === party.id ? { ...p, probablyNotComing: next } : p,
         ),
       );
     } catch (err) {
@@ -178,6 +204,14 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
       .reduce((total, p) => total + (p.guests?.length || 0), 0);
     const invitationsSent = parties.filter((p) => p.invitationSent).length;
 
+    const probablyNotComingParties = parties.filter(
+      (p) => !p.hasSubmission && p.probablyNotComing,
+    );
+    const probablyNotComingPeople = probablyNotComingParties.reduce(
+      (total, p) => total + p.members.length,
+      0,
+    );
+
     return {
       totalParties: parties.length,
       submittedParties: submitted.length,
@@ -187,6 +221,8 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
       notAttending,
       needsCoach,
       invitationsSent,
+      probablyNotComingParties: probablyNotComingParties.length,
+      probablyNotComingPeople,
       responseRate:
         parties.length > 0
           ? ((submitted.length / parties.length) * 100).toFixed(1)
@@ -217,6 +253,9 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
       filtered = filtered.filter((p) => p.invitationSent);
     if (invitationFilter === "not-sent")
       filtered = filtered.filter((p) => !p.invitationSent);
+
+    if (notComingFilter === "probably-not-coming")
+      filtered = filtered.filter((p) => !p.hasSubmission && p.probablyNotComing);
 
     return filtered.sort((a, b) =>
       (a.label || "").localeCompare(b.label || ""),
@@ -336,7 +375,7 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                     Export CSV
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-2">
                       Search by Name
@@ -385,6 +424,25 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                       <option value="not-sent">Not sent</option>
                     </select>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Attendance Likelihood
+                    </label>
+                    <select
+                      value={notComingFilter}
+                      onChange={(e) =>
+                        setNotComingFilter(
+                          e.target.value as typeof notComingFilter,
+                        )
+                      }
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                    >
+                      <option value="all">All</option>
+                      <option value="probably-not-coming">
+                        Probably not coming
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -419,11 +477,19 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                                 <h3 className="font-semibold text-gray-900">
                                   {party.label}
                                 </h3>
-                                {party.invitationSent && (
-                                  <span className="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                                    ✉ Invited
-                                  </span>
-                                )}
+                                <div className="flex shrink-0 gap-1">
+                                  {party.invitationSent && (
+                                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                                      ✉ Invited
+                                    </span>
+                                  )}
+                                  {!party.hasSubmission &&
+                                    party.probablyNotComing && (
+                                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                                        ⚠ Probably not coming
+                                      </span>
+                                    )}
+                                </div>
                               </div>
                               <p className="text-xs text-gray-500">
                                 ID: {party.id}
@@ -518,6 +584,27 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                                       : "Delete"}
                                   </button>
                                 </div>
+                                {!party.hasSubmission && (
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() =>
+                                        toggleProbablyNotComing(party)
+                                      }
+                                      disabled={updatingId === party.id}
+                                      className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs rounded-lg border transition-colors disabled:opacity-50 ${
+                                        party.probablyNotComing
+                                          ? "bg-red-50 hover:bg-red-100 text-red-700 border-red-200"
+                                          : "bg-gray-50 hover:bg-gray-100 text-gray-600 border-gray-200"
+                                      }`}
+                                    >
+                                      {updatingId === party.id
+                                        ? "Saving…"
+                                        : party.probablyNotComing
+                                          ? "⚠ Probably not coming"
+                                          : "Mark probably not coming"}
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -716,6 +803,18 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                           </div>
                           <div className="text-sm text-neutral-600">
                             Bus seats requested
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-red-600">
+                            {totals.probablyNotComingPeople}
+                          </div>
+                          <div className="text-sm text-neutral-600">
+                            Probably not coming ({totals.probablyNotComingParties}{" "}
+                            {totals.probablyNotComingParties === 1
+                              ? "party"
+                              : "parties"}
+                            )
                           </div>
                         </div>
                       </div>
