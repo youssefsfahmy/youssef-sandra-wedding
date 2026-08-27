@@ -96,7 +96,7 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
   const copyPartyReminder = async (party: PartyWithSubmission) => {
     const message = `Our wedding day is almost here, so this is just a little RSVP reminder ✨
 
-If you haven't confirmed yet, please let us know through the invitation. It would mean so much to have you there sharing this special day with us 🤍
+Please let us know through the invitation, It would mean so much to have you there sharing this special day with us 🤍
 
 https://youssefxsandra.com?partyId=${party.id}
 
