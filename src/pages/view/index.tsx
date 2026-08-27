@@ -23,6 +23,9 @@ const ViewPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedPartyId, setCopiedPartyId] = useState<string | null>(null);
+  const [copiedReminderId, setCopiedReminderId] = useState<string | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [submissionFilter, setSubmissionFilter] = useState<
     "all" | "submitted" | "pending"
@@ -36,8 +39,7 @@ const ViewPage: React.FC = () => {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const copyPartyLink = async (party: PartyWithSubmission) => {
-    // Generate personalized greeting
+  const getPartyGreeting = (party: PartyWithSubmission) => {
     let greeting = "Dearest ";
     if (party.members.length <= 2) {
       greeting += party.members
@@ -47,9 +49,24 @@ const ViewPage: React.FC = () => {
     } else {
       greeting += `${party.members[0].firstName} and family`;
     }
-    greeting += ",\n\n";
+    return greeting;
+  };
 
-    const message = `${greeting}The day we've been waiting for is finally getting close, and we're so happy to share it with you 🤍
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
+  };
+
+  const copyPartyLink = async (party: PartyWithSubmission) => {
+    const message = `${getPartyGreeting(party)},\n\nThe day we've been waiting for is finally getting close, and we're so happy to share it with you 🤍
 
 Together with our families, we would love to invite you to celebrate our wedding with us.
 
@@ -71,18 +88,24 @@ https://maps.app.goo.gl/6woycMKqk1pQKuCx8
 *Venue location:*
 https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
 
-    try {
-      await navigator.clipboard.writeText(message);
-    } catch {
-      const el = document.createElement("textarea");
-      el.value = message;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-    }
+    await copyToClipboard(message);
     setCopiedPartyId(party.id);
     setTimeout(() => setCopiedPartyId(null), 2000);
+  };
+
+  const copyPartyReminder = async (party: PartyWithSubmission) => {
+    const message = `Our wedding day is almost here, so this is just a little RSVP reminder ✨
+
+If you haven't confirmed yet, please let us know through the invitation. It would mean so much to have you there sharing this special day with us 🤍
+
+https://youssefxsandra.com?partyId=${party.id}
+
+Can't wait to celebrate together!
+Youssef & Sandra`;
+
+    await copyToClipboard(message);
+    setCopiedReminderId(party.id);
+    setTimeout(() => setCopiedReminderId(null), 2000);
   };
 
   const fetchParties = async () => {
@@ -558,6 +581,18 @@ https://maps.app.goo.gl/oDrmBMTqqEdjBbreA`;
                                     🔗
                                   </button>
                                 </div>
+                                {!party.hasSubmission && (
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => copyPartyReminder(party)}
+                                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg transition-colors"
+                                    >
+                                      {copiedReminderId === party.id
+                                        ? "✓ Copied!"
+                                        : "⏰ RSVP Reminder"}
+                                    </button>
+                                  </div>
+                                )}
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => toggleInvitationSent(party)}
