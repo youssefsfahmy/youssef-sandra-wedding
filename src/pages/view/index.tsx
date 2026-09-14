@@ -23,9 +23,7 @@ const ViewPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedPartyId, setCopiedPartyId] = useState<string | null>(null);
-  const [copiedReminderId, setCopiedReminderId] = useState<string | null>(
-    null,
-  );
+  const [copiedReminderId, setCopiedReminderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [submissionFilter, setSubmissionFilter] = useState<
     "all" | "submitted" | "pending"
@@ -34,7 +32,7 @@ const ViewPage: React.FC = () => {
     "all" | "sent" | "not-sent"
   >("all");
   const [notComingFilter, setNotComingFilter] = useState<
-    "all" | "probably-not-coming"
+    "all" | "probably-not-coming" | "not-not-comming"
   >("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -278,7 +276,14 @@ Youssef & Sandra`;
       filtered = filtered.filter((p) => !p.invitationSent);
 
     if (notComingFilter === "probably-not-coming")
-      filtered = filtered.filter((p) => !p.hasSubmission && p.probablyNotComing);
+      filtered = filtered.filter(
+        (p) => !p.hasSubmission && p.probablyNotComing,
+      );
+
+    if (notComingFilter === "not-not-comming")
+      filtered = filtered.filter(
+        (p) => !p.hasSubmission && !p.probablyNotComing,
+      );
 
     return filtered.sort((a, b) =>
       (a.label || "").localeCompare(b.label || ""),
@@ -464,6 +469,7 @@ Youssef & Sandra`;
                       <option value="probably-not-coming">
                         Probably not coming
                       </option>
+                      <option value="not-not-comming">Not not coming</option>
                     </select>
                   </div>
                 </div>
@@ -845,7 +851,8 @@ Youssef & Sandra`;
                             {totals.probablyNotComingPeople}
                           </div>
                           <div className="text-sm text-neutral-600">
-                            Probably not coming ({totals.probablyNotComingParties}{" "}
+                            Probably not coming (
+                            {totals.probablyNotComingParties}{" "}
                             {totals.probablyNotComingParties === 1
                               ? "party"
                               : "parties"}
